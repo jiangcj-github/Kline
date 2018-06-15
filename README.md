@@ -38,9 +38,12 @@
 
 ### Install & Load
 
-编译
+下载及编译
 
 ```bash
+$ git clone https://github.com/lindakai2016/Kline.git
+$ cd Kline
+$ npm install
 $ npm run build
 ```
 
