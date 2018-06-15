@@ -47,6 +47,7 @@ $ npm run build
 * 使用标签引入, 在HTML页面头部加入
 
 ```html
+    <link href="../src/css/main.css" type="text/css" rel="stylesheet">
     <script src="/lib/stomp.js"></script>
     <script src="/lib/jquery-3.3.1.min.js"></script>
     <script src="/lib/jquery.mousewheel.js"></script>
