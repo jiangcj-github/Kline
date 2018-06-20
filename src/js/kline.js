@@ -1,5 +1,5 @@
 import {Control} from './control'
-import {KlineTrade} from './kline_trade'
+//import {KlineTrade} from './kline_trade'
 import {ChartManager} from './chart_manager'
 import {ChartSettings} from './chart_settings'
 import {Template} from './templates'
@@ -39,8 +39,8 @@ export default class Kline {
         this.language = "zh-cn";
         this.theme = "dark";
         this.ranges = ["1w", "1d", "1h", "30m", "15m", "5m", "1m", "line"];
-        this.showTrade = true;
-        this.tradeWidth = 250;
+        //this.showTrade = true;
+        //this.tradeWidth = 250;
         this.socketConnected = false;
         //this.enableSockjs = true;
         this.reverseColor = false;
@@ -48,6 +48,8 @@ export default class Kline {
         this.paused = false;
         this.subscribed = null;
         //this.disableFirebase = false;
+        this.showDepth=false;
+        this.depthWidth=50;
 
         this.periodMap = {
             "01w": 7 * 86400 * 1000,
@@ -98,7 +100,7 @@ export default class Kline {
      *********************************************/
 
     draw() {
-        Kline.trade = new KlineTrade();
+        //Kline.trade = new KlineTrade();
         Kline.chartMgr = new ChartManager();
 
         let view = $.parseHTML(tpl);
@@ -130,6 +132,8 @@ export default class Kline {
 
         this.setTheme(this.theme);
         this.setLanguage(this.language);
+        this.setSymbol(this.symbol,this.symbolName);
+        this.setDepth(this.showDepth,this.depthWidth);
 
         $(this.element).css({visibility: "visible"});
     }
@@ -143,7 +147,7 @@ export default class Kline {
     setSymbol(symbol, symbolName) {
         this.symbol = symbol;
         this.symbolName = symbolName;
-        Control.switchSymbol(symbol);
+        Control.switchSymbol(symbol,symbolName);
         this.onSymbolChange(symbol, symbolName);
     }
 
@@ -157,6 +161,13 @@ export default class Kline {
         Control.chartSwitchLanguage(lang);
     }
 
+    setDepth(showDepth,depthWidth){
+        this.showDepth=showDepth;
+        this.depthWidth=depthWidth;
+        Control.switchDepth(showDepth,depthWidth);
+    }
+
+    /*
     setShowTrade(isShow) {
         this.showTrade = isShow;
         if (isShow) {
@@ -177,6 +188,7 @@ export default class Kline {
         }
         Control.onSize(this.width, this.height);
     }
+    */
 
     setIntervalTime(intervalTime) {
         this.intervalTime = intervalTime;
@@ -381,10 +393,13 @@ export default class Kline {
                     let tmp = ChartSettings.get();
                     tmp.charts.indics[1] = name;
                     ChartSettings.save();
+                    /*
                     if (Template.displayVolume === false)
                         ChartManager.instance.getChart().setIndicator(1, name);
                     else
                         ChartManager.instance.getChart().setIndicator(2, name);
+                    */
+                    ChartManager.instance.getChart().setIndicator(1, name);
                 });
             $("#chart_select_chart_style a")
                 .click(function () {

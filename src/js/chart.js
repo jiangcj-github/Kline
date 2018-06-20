@@ -190,16 +190,22 @@ export class Chart {
 
     setIndicator(index, indicName) {
         if (indicName === 'NONE') {
+            /*
             let index = 2;
             if (Template.displayVolume === false)
                 index = 1;
+            */
+            let index=1;
             let areaName = ChartManager.instance.getIndicatorAreaName('frame0.k0', index);
             if (areaName !== '')
                 ChartManager.instance.removeIndicator(areaName);
         } else {
+            /*
             let index = 2;
             if (Template.displayVolume === false)
                 index = 1;
+            */
+            let index=1;
             let areaName = ChartManager.instance.getIndicatorAreaName('frame0.k0', index);
             if (areaName === '') {
                 Template.createIndicatorChartComps('frame0.k0', indicName);

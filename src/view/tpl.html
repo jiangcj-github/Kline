@@ -1,35 +1,8 @@
-<div class="trade_container dark hide">
-    <div class="m_cent">
-        <div class="m_guadan">
-            <div class="symbol-title">
-                <a class="dark"></a>
-            </div>
-            <div id="orderbook">
-                <div id="asks">
-                    <div class="table"></div>
-                </div>
-                <div id="gasks">
-                    <div class="table"></div>
-                </div>
-                <div id="price" class="green"></div>
-                <div id="bids">
-                    <div class="table"></div>
-                </div>
-                <div id="gbids">
-                    <div class="table"></div>
-                </div>
-            </div>
-            <div id="trades" class="trades">
-                <div class="trades_list"></div>
-            </div>
-        </div>
-    </div>
-</div>
 <div class="chart_container dark">
     <div id="chart_dom_elem_cache"></div>
     <!-- ToolBar -->
     <div id="chart_toolbar">
-        <div class="chart_toolbar_minisep"></div>
+        <div class="symbol-title" id="symbol_title"></div>
         <!-- Periods -->
         <div class="chart_dropdown" id="chart_toolbar_periods_vert">
             <div class="chart_dropdown_t"><a class="chart_str_period">周期</a></div>
@@ -253,7 +226,7 @@
 
         </div>
     </div>
-               <!-- ToolPanel -->
+    <!-- ToolPanel -->
     <div id="chart_toolpanel">
         <div class="chart_toolpanel_separator"></div>
 
@@ -353,8 +326,11 @@
                 斐波纳契扇形
             </div>
         </div>
-        <div style="padding-left: 3px;padding-top: 10px;">
-            <button style="color: red;" id="clearCanvas" title="Clear All">X</button>
+        <div class="clear_all">
+            <div class="clear_all_icon" id="clearCanvas"></div>
+            <div class="chart_toolpanel_tip chart_str_clear_all">
+                清除全部
+            </div>
         </div>
     </div>
     <div id="chart_canvasGroup" class="temp">
@@ -363,6 +339,8 @@
     </div>
     <div id="chart_tabbar">
         <ul>
+            <li><a name="VOLUME" class="">VOLUME</a></li>
+
             <li><a name="MACD" class="">MACD</a></li>
 
             <li><a name="KDJ" class="">KDJ</a></li>
@@ -406,9 +384,7 @@
             <tbody>
             <tr>
                 <th>MA</th>
-                <td><input name="MA"><input name="MA"><input name="MA"><input name="MA"><br><input
-                        name="MA"><input
-                        name="MA">
+                <td><input name="MA"><input name="MA"><input name="MA"><input name="MA"><input name="MA"><input name="MA">
                 </td>
                 <td>
                     <button class="chart_str_default">默认值</button>
@@ -422,8 +398,7 @@
             <tr>
                 <th>EMA</th>
                 <td>
-                    <input name="EMA"><input name="EMA"><input name="EMA"><input name="EMA"><br>
-                    <input name="EMA"><input name="EMA">
+                    <input name="EMA"><input name="EMA"><input name="EMA"><input name="EMA"><input name="EMA"><input name="EMA">
                 </td>
                 <td>
                     <button class="chart_str_default">默认值</button>
@@ -594,8 +569,6 @@
     <span name="chart_str_theme" zh_tw="主題選擇" zh_cn="主题选择" en_us="Theme"></span>
     <span name="chart_str_theme_cap" zh_tw="主題選擇" zh_cn="主题选择" en_us="THEME"></span>
     <span name="chart_language_setting" zh_tw="語言(LANG)" zh_cn="语言(LANG)" en_us="LANGUAGE"></span>
-    <span name="chart_exchanges_setting" zh_tw="更多市場" zh_cn="更多市场" en_us="MORE MARKETS"></span>
-    <span name="chart_othercoin_setting" zh_tw="其它市場" zh_cn="其它市场" en_us="OTHER MARKETS"></span>
 
     <span name="chart_str_none" zh_tw="關閉" zh_cn="关闭" en_us="None"></span>
     <span name="chart_str_theme_dark" zh_tw="深色主題" zh_cn="深色主题" en_us="Dark"></span>
@@ -622,6 +595,5 @@
     <span name="chart_str_bi_parallel_ray" zh_tw="平行射線" zh_cn="平行射线" en_us="Parallel Rays"></span>
     <span name="chart_str_fib_retrace" zh_tw="斐波納契回調" zh_cn="斐波纳契回调" en_us="Fibonacci Retracements"></span>
     <span name="chart_str_fib_fans" zh_tw="斐波納契扇形" zh_cn="斐波纳契扇形" en_us="Fibonacci Fans"></span>
-    <span name="chart_str_updated" zh_tw="更新於" zh_cn="更新于" en_us="Updated"></span>
-    <span name="chart_str_ago" zh_tw="前" zh_cn="前" en_us="ago"></span>
+    <span name="chart_str_clear_all" zh_tw="清除全部" zh_cn="清除全部" en_us="Clear All"></span>
 </div>

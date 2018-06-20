@@ -7,7 +7,7 @@
 		var a = typeof exports === 'object' ? factory(require("jquery")) : factory(root["$"]);
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE_19__) {
+})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE_18__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 20);
+/******/ 	return __webpack_require__(__webpack_require__.s = 19);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -87,11 +87,11 @@ exports.ChartManager = void 0;
 
 var _control = __webpack_require__(8);
 
-var _chart = __webpack_require__(21);
+var _chart = __webpack_require__(20);
 
-var indicators = _interopRequireWildcard(__webpack_require__(25));
+var indicators = _interopRequireWildcard(__webpack_require__(24));
 
-var ranges = _interopRequireWildcard(__webpack_require__(18));
+var ranges = _interopRequireWildcard(__webpack_require__(17));
 
 var templates = _interopRequireWildcard(__webpack_require__(7));
 
@@ -1482,7 +1482,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.NamedObject = void 0;
 
-var _cname = __webpack_require__(15);
+var _cname = __webpack_require__(14);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1582,7 +1582,7 @@ exports.MainDataSource = exports.DataSource = void 0;
 
 var _named_object = __webpack_require__(1);
 
-var _ctool_manager = __webpack_require__(22);
+var _ctool_manager = __webpack_require__(21);
 
 var _kline = _interopRequireDefault(__webpack_require__(3));
 
@@ -1889,17 +1889,15 @@ exports.default = void 0;
 
 var _control = __webpack_require__(8);
 
-var _kline_trade = __webpack_require__(14);
-
 var _chart_manager = __webpack_require__(0);
 
 var _chart_settings = __webpack_require__(4);
 
 var _templates = __webpack_require__(7);
 
-var _tpl = _interopRequireDefault(__webpack_require__(26));
+var _tpl = _interopRequireDefault(__webpack_require__(25));
 
-var _jquery = _interopRequireDefault(__webpack_require__(19));
+var _jquery = _interopRequireDefault(__webpack_require__(18));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1938,9 +1936,9 @@ function () {
     this.debug = true;
     this.language = "zh-cn";
     this.theme = "dark";
-    this.ranges = ["1w", "1d", "1h", "30m", "15m", "5m", "1m", "line"];
-    this.showTrade = true;
-    this.tradeWidth = 250;
+    this.ranges = ["1w", "1d", "1h", "30m", "15m", "5m", "1m", "line"]; //this.showTrade = true;
+    //this.tradeWidth = 250;
+
     this.socketConnected = false; //this.enableSockjs = true;
 
     this.reverseColor = false;
@@ -1948,6 +1946,8 @@ function () {
     this.paused = false;
     this.subscribed = null; //this.disableFirebase = false;
 
+    this.showDepth = false;
+    this.depthWidth = 50;
     this.periodMap = {
       "01w": 7 * 86400 * 1000,
       "03d": 3 * 86400 * 1000,
@@ -1997,7 +1997,7 @@ function () {
   _createClass(Kline, [{
     key: "draw",
     value: function draw() {
-      Kline.trade = new _kline_trade.KlineTrade();
+      //Kline.trade = new KlineTrade();
       Kline.chartMgr = new _chart_manager.ChartManager();
 
       var view = _jquery.default.parseHTML(_tpl.default);
@@ -2036,6 +2036,8 @@ function () {
 
       this.setTheme(this.theme);
       this.setLanguage(this.language);
+      this.setSymbol(this.symbol, this.symbolName);
+      this.setDepth(this.showDepth, this.depthWidth);
       (0, _jquery.default)(this.element).css({
         visibility: "visible"
       });
@@ -2054,7 +2056,7 @@ function () {
       this.symbol = symbol;
       this.symbolName = symbolName;
 
-      _control.Control.switchSymbol(symbol);
+      _control.Control.switchSymbol(symbol, symbolName);
 
       this.onSymbolChange(symbol, symbolName);
     }
@@ -2073,31 +2075,35 @@ function () {
       _control.Control.chartSwitchLanguage(lang);
     }
   }, {
-    key: "setShowTrade",
-    value: function setShowTrade(isShow) {
-      this.showTrade = isShow;
+    key: "setDepth",
+    value: function setDepth(showDepth, depthWidth) {
+      this.showDepth = showDepth;
+      this.depthWidth = depthWidth;
 
-      if (isShow) {
-        (0, _jquery.default)(".trade_container").show();
-      } else {
-        (0, _jquery.default)(".trade_container").hide();
-      }
-
-      _control.Control.onSize(this.width, this.height);
+      _control.Control.switchDepth(showDepth, depthWidth);
     }
-  }, {
-    key: "toggleTrade",
-    value: function toggleTrade() {
-      if (!this.showTrade) {
-        this.showTrade = true;
-        (0, _jquery.default)(".trade_container").show();
-      } else {
-        this.showTrade = false;
-        (0, _jquery.default)(".trade_container").hide();
-      }
-
-      _control.Control.onSize(this.width, this.height);
+    /*
+    setShowTrade(isShow) {
+        this.showTrade = isShow;
+        if (isShow) {
+            $(".trade_container").show();
+        } else {
+            $(".trade_container").hide();
+        }
+        Control.onSize(this.width, this.height);
     }
+      toggleTrade() {
+        if (!this.showTrade) {
+            this.showTrade = true;
+            $(".trade_container").show();
+        } else {
+            this.showTrade = false;
+            $(".trade_container").hide();
+        }
+        Control.onSize(this.width, this.height);
+    }
+    */
+
   }, {
     key: "setIntervalTime",
     value: function setIntervalTime(intervalTime) {
@@ -2317,8 +2323,15 @@ function () {
           tmp.charts.indics[1] = name;
 
           _chart_settings.ChartSettings.save();
+          /*
+          if (Template.displayVolume === false)
+              ChartManager.instance.getChart().setIndicator(1, name);
+          else
+              ChartManager.instance.getChart().setIndicator(2, name);
+          */
 
-          if (_templates.Template.displayVolume === false) _chart_manager.ChartManager.instance.getChart().setIndicator(1, name);else _chart_manager.ChartManager.instance.getChart().setIndicator(2, name);
+
+          _chart_manager.ChartManager.instance.getChart().setIndicator(1, name);
         });
         (0, _jquery.default)("#chart_select_chart_style a").click(function () {
           (0, _jquery.default)("#chart_select_chart_style a").removeClass('selected');
@@ -2678,8 +2691,10 @@ function () {
       _frame.chartStyle = _chart_style;
       _frame.mIndic = _m_indic;
       _frame.indics = _indic;
-      _frame.indicsStatus = 'open';
+      _frame.indicsStatus = 'close';
       _frame.period = _range;
+      _frame.showDepth = false;
+      _frame.depthWidth = 50;
       ChartSettings._data = {
         ver: 1,
         charts: _frame,
@@ -3008,15 +3023,15 @@ var areas = _interopRequireWildcard(__webpack_require__(13));
 
 var plotters = _interopRequireWildcard(__webpack_require__(11));
 
-var _timeline = __webpack_require__(23);
+var _timeline = __webpack_require__(22);
 
-var _cname = __webpack_require__(15);
+var _cname = __webpack_require__(14);
 
-var layouts = _interopRequireWildcard(__webpack_require__(24));
+var layouts = _interopRequireWildcard(__webpack_require__(23));
 
 var themes = _interopRequireWildcard(__webpack_require__(6));
 
-var ranges = _interopRequireWildcard(__webpack_require__(18));
+var ranges = _interopRequireWildcard(__webpack_require__(17));
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
@@ -3047,6 +3062,7 @@ function () {
 
   _createClass(Template, null, [{
     key: "createCandlestickDataSource",
+    //static displayVolume = true;
     value: function createCandlestickDataSource(dsAlias) {
       return new data_sources.MainDataSource(dsAlias);
     }
@@ -3062,10 +3078,11 @@ function () {
     key: "createTableComps",
     value: function createTableComps(dsName) {
       this.createMainChartComps(dsName);
-
+      /*
       if (this.displayVolume) {
-        this.createIndicatorChartComps(dsName, "VOLUME");
+          this.createIndicatorChartComps(dsName, "VOLUME");
       }
+      */
 
       this.createTimelineComps(dsName);
     }
@@ -3209,7 +3226,6 @@ function () {
 }();
 
 exports.Template = Template;
-Template.displayVolume = true;
 
 var DefaultTemplate =
 /*#__PURE__*/
@@ -3295,17 +3311,15 @@ exports.Control = void 0;
 
 var _kline = _interopRequireDefault(__webpack_require__(3));
 
-var _kline_trade = __webpack_require__(14);
-
 var _chart_manager = __webpack_require__(0);
 
 var _chart_settings = __webpack_require__(4);
 
 var _templates = __webpack_require__(7);
 
-var _mevent = __webpack_require__(17);
+var _mevent = __webpack_require__(16);
 
-var _jquery = _interopRequireDefault(__webpack_require__(19));
+var _jquery = _interopRequireDefault(__webpack_require__(18));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -3500,15 +3514,19 @@ function () {
 
         return;
       }
-
-      if (_kline.default.instance.data.trades && _kline.default.instance.data.trades.length > 0) {
-        _kline_trade.KlineTrade.instance.pushTrades(_kline.default.instance.data.trades);
-
-        _kline_trade.KlineTrade.instance.klineTradeInit = true;
+      /*
+      if (Kline.instance.data.trades && Kline.instance.data.trades.length > 0) {
+          KlineTrade.instance.pushTrades(Kline.instance.data.trades);
+          KlineTrade.instance.klineTradeInit = true;
       }
+      */
 
-      if (_kline.default.instance.data.depths) {
-        _kline_trade.KlineTrade.instance.updateDepth(_kline.default.instance.data.depths);
+
+      var tmp = _chart_settings.ChartSettings.get();
+
+      if (_kline.default.instance.data.depths && tmp.charts.showDepth) {
+        //KlineTrade.instance.updateDepth(Kline.instance.data.depths);
+        _chart_manager.ChartManager.instance.getChart().updateDepth(_kline.default.instance.data.depths);
       }
 
       Control.clearRefreshCounter();
@@ -3604,10 +3622,11 @@ function () {
     value: function setHttpRequestParam(symbol, range, limit, since) {
       var str = "symbol=" + symbol + "&range=" + range;
       if (limit !== null) str += "&limit=" + limit;else str += "&since=" + since;
-
-      if (_kline_trade.KlineTrade.instance.tradeDate.getTime() !== 0) {
-        str += "&prevTradeTime=" + _kline_trade.KlineTrade.instance.tradeDate.getTime();
+      /*
+      if (KlineTrade.instance.tradeDate.getTime() !== 0) {
+          str += "&prevTradeTime=" + KlineTrade.instance.tradeDate.getTime();
       }
+      */
 
       return str;
     }
@@ -3649,8 +3668,9 @@ function () {
   }, {
     key: "onSize",
     value: function onSize(w, h) {
-      var width = w || window.innerWidth;
-      var chartWidth = _kline.default.instance.showTrade ? width - _kline.default.instance.tradeWidth : width;
+      var width = w || window.innerWidth; //let chartWidth = Kline.instance.showTrade ? (width - Kline.instance.tradeWidth) : width;
+
+      var chartWidth = width;
       var height = h || window.innerHeight;
       var container = (0, _jquery.default)(_kline.default.instance.element);
       container.css({
@@ -3735,13 +3755,14 @@ function () {
       var rowTheme = (0, _jquery.default)('#chart_select_theme')[0];
       var rowTools = (0, _jquery.default)('#chart_enable_tools')[0];
       var rowIndic = (0, _jquery.default)('#chart_enable_indicator')[0];
+      var symbolTitle = (0, _jquery.default)("#symbol_title")[0];
       var periodsVert = (0, _jquery.default)('#chart_toolbar_periods_vert');
       var periodsHorz = (0, _jquery.default)('#chart_toolbar_periods_horz')[0];
       var showIndic = (0, _jquery.default)('#chart_show_indicator')[0];
       var showTools = (0, _jquery.default)('#chart_show_tools')[0];
       var selectTheme = (0, _jquery.default)('#chart_toolbar_theme')[0];
       var dropDownSettings = (0, _jquery.default)('#chart_dropdown_settings');
-      var periodsVertNW = periodsVert[0].offsetWidth;
+      var periodsVertNW = symbolTitle.offsetWidth + periodsVert[0].offsetWidth;
       var periodsHorzNW = periodsVertNW + periodsHorz.offsetWidth;
       var showIndicNW = periodsHorzNW + showIndic.offsetWidth + 4;
       var showToolsNW = showIndicNW + showTools.offsetWidth + 4;
@@ -3904,7 +3925,15 @@ function () {
         _chart_settings.ChartSettings.save();
 
         var value = tmp.charts.indics[1];
-        if (_templates.Template.displayVolume === false) _chart_manager.ChartManager.instance.getChart().setIndicator(2, value);else _chart_manager.ChartManager.instance.getChart().setIndicator(2, value);
+        /*
+        if (Template.displayVolume === false)
+            ChartManager.instance.getChart().setIndicator(2, value);
+        else
+            ChartManager.instance.getChart().setIndicator(2, value);
+        */
+
+        _chart_manager.ChartManager.instance.getChart().setIndicator(1, value);
+
         (0, _jquery.default)("#chart_tabbar").find('a').each(function () {
           if ((0, _jquery.default)(this).attr('name') === value) (0, _jquery.default)(this).addClass('selected');
         });
@@ -3980,20 +4009,35 @@ function () {
       _chart_settings.ChartSettings.save();
     }
   }, {
+    key: "switchDepth",
+    value: function switchDepth(showDepth, depthWidth) {
+      var tmp = _chart_settings.ChartSettings.get();
+
+      tmp.charts.showDepth = showDepth;
+      tmp.charts.depthWidth = depthWidth;
+
+      _chart_settings.ChartSettings.save();
+    }
+  }, {
     key: "reset",
     value: function reset(symbol) {
       _kline.default.instance.symbol = symbol;
-
-      if (_kline.default.instance.showTrade) {
-        _kline_trade.KlineTrade.instance.reset(symbol);
+      /*
+      if (Kline.instance.showTrade) {
+          KlineTrade.instance.reset(symbol);
       }
+      */
     }
   }, {
     key: "switchSymbolSelected",
-    value: function switchSymbolSelected(symbol) {
+    value: function switchSymbolSelected(symbol, symbolName) {
       Control.reset(symbol);
-      (0, _jquery.default)(".market_chooser ul a").removeClass("selected");
-      (0, _jquery.default)(".market_chooser ul a[name='" + symbol + "']").addClass("selected");
+      /*
+      $(".market_chooser ul a").removeClass("selected");
+      $(".market_chooser ul a[name='" + symbol + "']").addClass("selected");
+      */
+
+      (0, _jquery.default)(".symbol-title").text(symbolName);
       _chart_manager.ChartManager.instance.getChart()._symbol = symbol;
 
       var settings = _chart_settings.ChartSettings.get();
@@ -4004,14 +4048,14 @@ function () {
     }
   }, {
     key: "switchSymbol",
-    value: function switchSymbol(symbol) {
+    value: function switchSymbol(symbol, symbolName) {
       if (_kline.default.instance.type === "stomp" && _kline.default.instance.stompClient.ws.readyState === 1) {
         _kline.default.instance.subscribed.unsubscribe();
 
         _kline.default.instance.subscribed = _kline.default.instance.stompClient.subscribe(_kline.default.instance.subscribePath + '/' + symbol + '/' + _kline.default.instance.range, Control.subscribeCallback);
       }
 
-      Control.switchSymbolSelected(symbol);
+      Control.switchSymbolSelected(symbol, symbolName);
 
       var settings = _chart_settings.ChartSettings.get();
 
@@ -5654,7 +5698,7 @@ var _util = __webpack_require__(5);
 
 var _cpoint = __webpack_require__(9);
 
-var exprs = _interopRequireWildcard(__webpack_require__(16));
+var exprs = _interopRequireWildcard(__webpack_require__(15));
 
 var themes = _interopRequireWildcard(__webpack_require__(6));
 
@@ -9373,7 +9417,7 @@ var _named_object = __webpack_require__(1);
 
 var _chart_manager = __webpack_require__(0);
 
-var _mevent = __webpack_require__(17);
+var _mevent = __webpack_require__(16);
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -10070,520 +10114,6 @@ exports.ChartAreaGroup = ChartAreaGroup;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.KlineTrade = void 0;
-
-var _chart_manager = __webpack_require__(0);
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var KlineTrade =
-/*#__PURE__*/
-function () {
-  function KlineTrade(option) {
-    _classCallCheck(this, KlineTrade);
-
-    this.browerState = 0;
-    this.tradeDate = new Date();
-    this.tradesLimit = 20;
-    this.lastDepth = null;
-    this.depthShowSize = 15;
-    this.priceDecimalDigits = 6;
-    this.amountDecimalDigits = 4;
-    this.symbol = null;
-    this.curPrice = null;
-    this.title = "";
-    Object.assign(this, option);
-
-    if (!KlineTrade.created) {
-      KlineTrade.instance = this;
-      KlineTrade.created = true;
-    }
-
-    return KlineTrade.instance;
-  }
-
-  _createClass(KlineTrade, [{
-    key: "reset",
-    value: function reset(symbol) {
-      this.symbol = symbol;
-      this.lastDepth = null;
-      this.curPrice = null;
-      this.klineTradeInit = false;
-      $("#trades .trades_list").empty();
-      $("#gasks .table").empty();
-      $("#gbids .table").empty();
-      $("#asks .table").empty();
-      $("#bids .table").empty();
-    }
-  }, {
-    key: "pushTrades",
-    value: function pushTrades(array) {
-      var $trades = $("#trades .trades_list");
-      var totalUls = "";
-
-      for (var i = 0; i < array.length; i++) {
-        var item = array[i];
-
-        if (i >= array.length - this.tradesLimit) {
-          this.tradeDate.setTime(item.time);
-          var dateStr = this.dateFormatTf(this.tradeDate.getHours()) + ":" + this.dateFormatTf(this.tradeDate.getMinutes()) + ":" + this.dateFormatTf(this.tradeDate.getSeconds());
-          var arr = (item.amount.toFixed(4) + "").split(".");
-          var price = item.price;
-
-          if (price > 1) {
-            price = price.toFixed(2);
-          }
-
-          if (price < 1 && price > 0.00001) {
-            price = price.toFixed(4);
-          }
-
-          if (price < 0.00001) {
-            price = price.toFixed(6);
-          }
-
-          if (this.klineTradeInit) {
-            totalUls = "<ul class='newul'><li class='tm'>" + dateStr + "</li><li class='pr-" + (item.type === 'buy' ? 'green' : 'red') + "'>" + price + "</li><li class='vl'>" + arr[0] + "<g>" + (arr.length > 1 ? '.' + arr[1] : '') + "</g></li></ul>" + totalUls;
-          } else {
-            totalUls = "<ul><li class='tm'>" + dateStr + "</li><li class='pr-" + (item.type === 'buy' ? 'green' : 'red') + "'>" + price + "</li><li class='vl'>" + arr[0] + "<g>" + (arr.length > 1 ? '.' + arr[1] : '') + "</g></li></ul>" + totalUls;
-          }
-        }
-      }
-
-      var j = 0;
-      var that = this;
-
-      if (this.klineTradeInit) {
-        clearInterval(myTime);
-        var myTime = setInterval(function () {
-          var item = array[j]; //that.curPrice = item.price
-
-          var price = Number(item.price);
-
-          if (price > 1) {
-            price = price.toFixed(2);
-          }
-
-          if (price < 1 && price > 0.0001) {
-            price = price.toFixed(4);
-          }
-
-          if (price < 0.0001) {
-            price = price.toFixed(6);
-          }
-
-          that.curPrice = price;
-          $("div#price").attr("class", item.type === 'buy' ? 'green' : 'red').text(price);
-          j++;
-
-          if (j >= array.length) {
-            clearInterval(myTime);
-          }
-        }, 100);
-      } else {
-        if (array.length > 0) {
-          //this.curPrice=array[array.length-1].price.toFixed(6);
-          var _price = Number(array[array.length - 1].price);
-
-          if (_price > 1) {
-            _price = _price.toFixed(2);
-          }
-
-          if (_price < 1 && _price > 0.0001) {
-            _price = _price.toFixed(4);
-          }
-
-          if (_price < 0.0001) {
-            _price = _price.toFixed(6);
-          }
-
-          that.curPrice = _price;
-          $("div#price").attr("class", array[array.length - 1].type === 'buy' ? 'green' : 'red').text(_price);
-        }
-      }
-
-      if (this.klineTradeInit) {
-        $trades.prepend(totalUls);
-      } else {
-        $trades.append(totalUls);
-      }
-
-      totalUls = null;
-      $trades.find("ul.newul").slideDown(1000, function () {
-        $(this).removeClass("newul");
-      });
-      $trades.find("ul:gt(" + (this.tradesLimit - 1) + ")").remove();
-    }
-  }, {
-    key: "updateDepth",
-    value: function updateDepth(data) {
-      _chart_manager.ChartManager.instance.getChart().updateDepth(data);
-
-      if (!data) return;
-      $("#gasks .table").html(this.getgview(this.getgasks(data.asks)));
-      $("#gbids .table").html(this.getgview(this.getgbids(data.bids)));
-
-      if (this.lastDepth === null) {
-        this.lastDepth = {};
-        this.lastDepth.asks = this.getAsks(data.asks, this.depthShowSize);
-        this.depthInit(this.lastDepth.asks, $("#asks .table"));
-        this.lastDepth.bids = this.getBids(data.bids, this.depthShowSize);
-        this.depthInit(this.lastDepth.bids, $("#bids .table"));
-      } else {
-        var parentAsks = $("#asks .table");
-        parentAsks.find("div.remove").remove();
-        parentAsks.find("div.add").removeClass("add");
-        var newasks = this.getAsks(data.asks, this.depthShowSize);
-        var oldasks = this.lastDepth.asks;
-        this.lastDepth.asks = newasks;
-        this.asksAndBids(newasks.slice(0), oldasks, parentAsks);
-        var parentBids = $("#bids .table");
-        parentBids.find("div.remove").remove();
-        parentBids.find("div.add").removeClass("add");
-        var newbids = this.getBids(data.bids, this.depthShowSize);
-        var oldbids = this.lastDepth.bids;
-        this.lastDepth.bids = newbids;
-        this.asksAndBids(newbids.slice(0), oldbids, $("#bids .table"));
-      }
-    }
-  }, {
-    key: "depthInit",
-    value: function depthInit(data, $obj) {
-      $obj.empty();
-
-      if (data && data.length > 0) {
-        var lastInt,
-            view = "";
-
-        for (var i = 0; i < data.length; i++) {
-          var arr = (data[i][0] + "").split(".");
-          var prices = this.getPrice(arr, lastInt);
-          lastInt = arr[0];
-          arr = (data[i][1] + "").split(".");
-          var amounts = this.getAmount(arr);
-          view += "<div class='row'><span class='price'>" + prices[0] + "<g>" + prices[1] + "</g></span> <span class='amount'>" + amounts[0] + "<g>" + amounts[1] + "</g></span></div>";
-        }
-
-        $obj.append(view);
-        view = null;
-      }
-    }
-  }, {
-    key: "asksAndBids",
-    value: function asksAndBids(addasks, oldasks, tbDiv) {
-      for (var i = 0; i < oldasks.length; i++) {
-        var isExist = false;
-
-        for (var j = 0; j < addasks.length; j++) {
-          if (oldasks[i][0] === addasks[j][0]) {
-            isExist = true;
-
-            if (oldasks[i][1] !== addasks[j][1]) {
-              var $amount = tbDiv.find("div:eq(" + i + ") .amount");
-              $amount.addClass(oldasks[i][1] > addasks[j][1] ? "red" : "green");
-              var amounts = this.getAmount((addasks[j][1] + "").split("."));
-              setTimeout(function ($amount, amounts) {
-                return function () {
-                  $amount.html(amounts[0] + "<g>" + amounts[1] + "</g>");
-                  $amount.removeClass("red").removeClass("green");
-                  $amount = null;
-                  amounts = null;
-                };
-              }($amount, amounts), 500);
-            }
-
-            addasks.splice(j, 1);
-            break;
-          }
-        }
-
-        if (!isExist) {
-          tbDiv.find("div:eq(" + i + ")").addClass("remove");
-          oldasks[i][2] = -1; //标识该数据对应div被移除
-        }
-      }
-
-      for (var _j = 0; _j < oldasks.length; _j++) {
-        for (var _i = 0; _i < addasks.length; _i++) {
-          if (addasks[_i][0] > oldasks[_j][0]) {
-            var arr = (addasks[_i][1] + "").split(".");
-
-            var _amounts = this.getAmount(arr);
-
-            tbDiv.find("div:eq(" + _j + ")").before("<div class='row add'><span class='price'></span> <span class='amount'>" + _amounts[0] + "<g>" + _amounts[1] + "</g></span></div>");
-            oldasks.splice(_j, 0, addasks[_i]);
-            addasks.splice(_i, 1);
-            break;
-          }
-        }
-      }
-
-      var totalDiv = "";
-
-      for (var _i2 = 0; _i2 < addasks.length; _i2++) {
-        oldasks.push(addasks[_i2]);
-
-        var _arr = (addasks[_i2][1] + "").split(".");
-
-        var _amounts2 = this.getAmount(_arr);
-
-        totalDiv += "<div class='row add'><span class='price'></span> <span class='amount'>" + _amounts2[0] + "<g>" + _amounts2[1] + "</g></span></div>";
-      }
-
-      if (totalDiv.length > 0) {
-        tbDiv.append(totalDiv);
-      }
-
-      totalDiv = null;
-      var lastInt;
-
-      for (var _i3 = 0; _i3 < oldasks.length; _i3++) {
-        var $div = tbDiv.find("div:eq(" + _i3 + ")");
-
-        if (!(oldasks[_i3].length >= 3 && oldasks[_i3][2] === -1)) {
-          var _arr2 = (oldasks[_i3][0] + "").split(".");
-
-          var prices = this.getPrice(_arr2, lastInt);
-          lastInt = _arr2[0];
-          $div.find(".price").html(prices[0] + "<g>" + prices[1] + "</g>");
-        }
-      }
-
-      addasks = null;
-      oldasks = null;
-      tbDiv.find("div.add").slideDown(800);
-      setTimeout(function ($remove, $add) {
-        return function () {
-          $remove.slideUp(500, function () {
-            $(this).remove();
-          });
-          $add.removeClass("add");
-        };
-      }(tbDiv.find("div.remove"), tbDiv.find("div.add")), 1000);
-    }
-  }, {
-    key: "getAsks",
-    value: function getAsks(array, len) {
-      if (array.length > len) {
-        array.splice(0, array.length - len);
-      }
-
-      return array;
-    }
-  }, {
-    key: "getBids",
-    value: function getBids(array, len) {
-      if (array.length > len) {
-        array.splice(len, array.length - 1);
-      }
-
-      return array;
-    }
-  }, {
-    key: "getgview",
-    value: function getgview(g) {
-      var gstr = "";
-      var lastInt;
-
-      for (var i = 0; i < g.length; i++) {
-        var arr = g[i][0].split(".");
-
-        if (arr.length === 1 || arr[0] !== lastInt) {
-          gstr += "<div class='row'><span class='price'>" + g[i][0] + "</span> <span class='amount'>" + g[i][1] + "</span></div>";
-          lastInt = arr[0];
-        } else {
-          gstr += "<div class='row'><span class='price'><h>" + arr[0] + ".</h>" + arr[1] + "</span> <span class='amount'>" + g[i][1] + "</span></div>";
-        }
-      }
-
-      return gstr;
-    }
-  }, {
-    key: "getgasks",
-    value: function getgasks(array) {
-      if (array.length < 2) {
-        return [];
-      }
-
-      var low = array[array.length - 1][0]; //最低价
-
-      var high = array[0][0]; //最高价
-
-      var r = high - low;
-      var block = this.getBlock(r, 100);
-      var n = Math.abs(Number(Math.log(block) / Math.log(10))).toFixed(0); //精确小数位数
-
-      if (r / block < 2) {
-        block = block / 2;
-        n++;
-      }
-
-      if (block >= 1) n = 0;
-      low = parseInt(low / block) * block;
-      high = parseInt(high / block) * block;
-      var gasks = [];
-      var amount = 0;
-
-      for (var i = array.length - 1; i >= 0; i--) {
-        if (array[i][0] > low) {
-          var amountInt = parseInt(amount, 10);
-
-          if (amountInt > 0) {
-            gasks.unshift([Number(low).toFixed(n), amountInt]);
-          }
-
-          if (low >= high) {
-            break;
-          }
-
-          low += block;
-        }
-
-        amount += array[i][1];
-      }
-
-      return gasks;
-    }
-  }, {
-    key: "getgbids",
-    value: function getgbids(array) {
-      if (array.length < 2) {
-        return [];
-      }
-
-      var low = array[array.length - 1][0];
-      var high = array[0][0];
-      var r = high - low;
-      var block = this.getBlock(r, 100);
-      var n = Math.abs(Number(Math.log(block) / Math.log(10))).toFixed(0); //精确小数位数
-
-      if (r / block < 2) {
-        block = block / 2;
-        n++;
-      }
-
-      if (block >= 1) n = 0;
-      low = parseInt(low / block) * block;
-      high = parseInt(high / block) * block;
-      var gbids = [];
-      var amount = 0;
-
-      for (var i = 0; i < array.length; i++) {
-        if (array[i][0] < high) {
-          var amountInt = parseInt(amount, 10);
-
-          if (amountInt > 0) {
-            gbids.push([Number(high).toFixed(n), amountInt]);
-          }
-
-          if (high <= low) {
-            break;
-          }
-
-          high -= block;
-        }
-
-        amount += array[i][1];
-      }
-
-      return gbids;
-    }
-  }, {
-    key: "getBlock",
-    value: function getBlock(b, scale) {
-      if (b > scale || b <= 0) {
-        return scale;
-      } else {
-        scale = scale / 10;
-        return this.getBlock(b, scale);
-      }
-    }
-  }, {
-    key: "getZeros",
-    value: function getZeros(i) {
-      var zeros = "";
-
-      while (i > 0) {
-        i--;
-        zeros += "0";
-      }
-
-      return zeros;
-    }
-  }, {
-    key: "getPrice",
-    value: function getPrice(arr, lastInt) {
-      var price1 = arr[0];
-
-      if (lastInt === price1) {
-        price1 = "<h>" + price1 + ".</h>";
-      } else {
-        price1 += ".";
-      }
-
-      var price2 = "";
-
-      if (arr.length === 1) {
-        price1 += "0";
-        price2 = this.getZeros(this.priceDecimalDigits - 1);
-      } else {
-        price1 += arr[1];
-        price2 = this.getZeros(this.priceDecimalDigits - arr[1].length);
-      }
-
-      return [price1, price2];
-    }
-  }, {
-    key: "getAmount",
-    value: function getAmount(arr) {
-      var amount1 = arr[0];
-      var amount2 = "";
-      var zerosLen = this.amountDecimalDigits - amount1.length + 1;
-
-      if (zerosLen > 0) {
-        amount2 = ".";
-
-        if (arr.length === 1) {
-          amount2 += this.getZeros(zerosLen);
-        } else if (zerosLen > arr[1].length) {
-          amount2 += arr[1] + this.getZeros(zerosLen - arr[1].length);
-        } else if (zerosLen === arr[1].length) {
-          amount2 += arr[1];
-        } else {
-          amount2 += arr[1].substring(0, zerosLen);
-        }
-      }
-
-      return [amount1, amount2];
-    }
-  }, {
-    key: "dateFormatTf",
-    value: function dateFormatTf(i) {
-      return (i < 10 ? '0' : '') + i;
-    }
-  }]);
-
-  return KlineTrade;
-}();
-
-exports.KlineTrade = KlineTrade;
-KlineTrade.created = false;
-KlineTrade.instance = null;
-
-/***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 exports.CName = void 0;
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -10649,7 +10179,7 @@ function () {
 exports.CName = CName;
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12255,7 +11785,7 @@ function (_OpABCDExpr) {
 exports.SarExpr = SarExpr;
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12331,7 +11861,7 @@ function () {
 exports.MEvent = MEvent;
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12875,13 +12405,13 @@ function (_Range5) {
 exports.PercentageRange = PercentageRange;
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports) {
 
-module.exports = __WEBPACK_EXTERNAL_MODULE_19__;
+module.exports = __WEBPACK_EXTERNAL_MODULE_18__;
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12901,7 +12431,7 @@ var _default = _kline.default;
 exports.default = _default;
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13101,15 +12631,23 @@ function () {
     key: "setIndicator",
     value: function setIndicator(index, indicName) {
       if (indicName === 'NONE') {
-        var _index = 2;
-        if (_templates.Template.displayVolume === false) _index = 1;
+        /*
+        let index = 2;
+        if (Template.displayVolume === false)
+            index = 1;
+        */
+        var _index = 1;
 
         var areaName = _chart_manager.ChartManager.instance.getIndicatorAreaName('frame0.k0', _index);
 
         if (areaName !== '') _chart_manager.ChartManager.instance.removeIndicator(areaName);
       } else {
-        var _index2 = 2;
-        if (_templates.Template.displayVolume === false) _index2 = 1;
+        /*
+        let index = 2;
+        if (Template.displayVolume === false)
+            index = 1;
+        */
+        var _index2 = 1;
 
         var _areaName = _chart_manager.ChartManager.instance.getIndicatorAreaName('frame0.k0', _index2);
 
@@ -13196,7 +12734,7 @@ Chart.strPeriod = {
 };
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13399,7 +12937,7 @@ function (_NamedObject) {
 exports.CToolManager = CToolManager;
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13747,7 +13285,7 @@ Timeline.PADDING_LEFT = 4;
 Timeline.PADDING_RIGHT = 8;
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13867,7 +13405,9 @@ function (_areas$ChartAreaGroup) {
 
       var nw = 8; // chart depths sidebar (深度图侧边栏宽度)
 
-      var minRW = 76;
+      var tmp = _chart_settings.ChartSettings.get();
+
+      var minRW = tmp.charts.depthWidth;
       var maxRW = Math.min(240, width >> 1);
       var rw = minRW;
       var mgr = _chart_manager.ChartManager.instance;
@@ -14257,7 +13797,7 @@ function (_areas$ChartAreaGroup2) {
 exports.DockableLayout = DockableLayout;
 
 /***/ }),
-/* 25 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14268,7 +13808,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.STOCHRSIIndicator = exports.PSYIndicator = exports.BOLLIndicator = exports.MTMIndicator = exports.ROCIndicator = exports.KDJIndicator = exports.SARIndicator = exports.WRIndicator = exports.RSIIndicator = exports.EMVIndicator = exports.OBVIndicator = exports.VRIndicator = exports.BRARIndicator = exports.TRIXIndicator = exports.DMAIndicator = exports.DMIIndicator = exports.MACDIndicator = exports.VOLUMEIndicator = exports.EMAIndicator = exports.MAIndicator = exports.HLCIndicator = exports.Indicator = void 0;
 
-var exprs = _interopRequireWildcard(__webpack_require__(16));
+var exprs = _interopRequireWildcard(__webpack_require__(15));
 
 var themes = _interopRequireWildcard(__webpack_require__(6));
 
@@ -15461,10 +15001,10 @@ function (_Indicator21) {
 exports.STOCHRSIIndicator = STOCHRSIIndicator;
 
 /***/ }),
-/* 26 */
+/* 25 */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"trade_container dark hide\">\n    <div class=\"m_cent\">\n        <div class=\"m_guadan\">\n            <div class=\"symbol-title\">\n                <a class=\"dark\"></a>\n            </div>\n            <div id=\"orderbook\">\n                <div id=\"asks\">\n                    <div class=\"table\"></div>\n                </div>\n                <div id=\"gasks\">\n                    <div class=\"table\"></div>\n                </div>\n                <div id=\"price\" class=\"green\"></div>\n                <div id=\"bids\">\n                    <div class=\"table\"></div>\n                </div>\n                <div id=\"gbids\">\n                    <div class=\"table\"></div>\n                </div>\n            </div>\n            <div id=\"trades\" class=\"trades\">\n                <div class=\"trades_list\"></div>\n            </div>\n        </div>\n    </div>\n</div>\n<div class=\"chart_container dark\">\n    <div id=\"chart_dom_elem_cache\"></div>\n    <!-- ToolBar -->\n    <div id=\"chart_toolbar\">\n        <div class=\"chart_toolbar_minisep\"></div>\n        <!-- Periods -->\n        <div class=\"chart_dropdown\" id=\"chart_toolbar_periods_vert\">\n            <div class=\"chart_dropdown_t\"><a class=\"chart_str_period\">周期</a></div>\n            <div class=\"chart_dropdown_data\" style=\"margin-left: -58px;\">\n                <table>\n                    <tbody>\n                    <tr>\n                        <td>\n                            <ul>\n                                <li id=\"chart_period_1w_v\" style=\"display:none;\" name=\"1w\">\n                                    <a class=\"chart_str_period_1w\">周线</a>\n                                </li>\n                                <li id=\"chart_period_3d_v\" style=\"display:none;\" name=\"3d\">\n                                    <a class=\"chart_str_period_3d\">3日</a>\n                                </li>\n                                <li id=\"chart_period_1d_v\" style=\"display:none;\" name=\"1d\">\n                                    <a class=\"chart_str_period_1d\">日线</a>\n                                </li>\n                                <li id=\"chart_period_12h_v\" style=\"display:none;\" name=\"12h\">\n                                    <a class=\"chart_str_period_12h\">12小时</a>\n                                </li>\n                                <li id=\"chart_period_6h_v\" style=\"display:none;\" name=\"6h\">\n                                    <a class=\"chart_str_period_6h\">6小时</a>\n                                </li>\n                                <li id=\"chart_period_4h_v\" style=\"display:none;\" name=\"4h\">\n                                    <a class=\"chart_str_period_4h\">4小时</a>\n                                </li>\n                                <li id=\"chart_period_2h_v\" style=\"display:none;\" name=\"2h\">\n                                    <a class=\"chart_str_period_2h\">2小时</a>\n                                </li>\n                                <li id=\"chart_period_1h_v\" style=\"display:none;\" name=\"1h\">\n                                    <a class=\"chart_str_period_1h\">1小时</a>\n                                </li>\n                            </ul>\n                        </td>\n\n                    </tr>\n\n                    <tr>\n                        <td>\n                            <ul>\n                                <li id=\"chart_period_30m_v\" style=\"display:none;\" name=\"30m\">\n                                    <a class=\"chart_str_period_30m\">30分钟</a>\n                                </li>\n                                <li id=\"chart_period_15m_v\" style=\"display:none;\" name=\"15m\">\n                                    <a class=\"chart_str_period_15m\">15分钟</a>\n                                </li>\n                                <li id=\"chart_period_5m_v\" style=\"display:none;\" name=\"5m\">\n                                    <a class=\"chart_str_period_5m\">5分钟</a>\n                                </li>\n                                <li id=\"chart_period_3m_v\" style=\"display:none;\" name=\"3m\">\n                                    <a class=\"chart_str_period_3m\">3分钟</a>\n                                </li>\n                                <li id=\"chart_period_1m_v\" style=\"display:none;\" name=\"1m\">\n                                    <a class=\"chart_str_period_1m selected\">1分钟</a>\n                                </li>\n                                <li id=\"chart_period_line_v\" style=\"display:none;\" name=\"line\">\n                                    <a class=\"chart_str_period_line\">分时</a>\n                                </li>\n                            </ul>\n                        </td>\n                    </tr>\n                    </tbody>\n                </table>\n            </div>\n        </div>\n        <div id=\"chart_toolbar_periods_horz\">\n            <ul class=\"chart_toolbar_tabgroup\" style=\"padding-left:5px; padding-right:11px;\">\n                <li id=\"chart_period_1w_h\" name=\"1w\" style=\"display: none;\">\n                    <a class=\"chart_str_period_1w\">周线</a>\n                </li>\n                <li id=\"chart_period_3d_h\" name=\"3d\" style=\"display: none;\">\n                    <a class=\"chart_str_period_3d\">3日</a>\n                </li>\n                <li id=\"chart_period_1d_h\" name=\"1d\" style=\"display: none;\">\n                    <a class=\"chart_str_period_1d\">日线</a>\n                </li>\n                <li id=\"chart_period_12h_h\" name=\"12h\" style=\"display: none;\">\n                    <a class=\"chart_str_period_12h\">12小时</a>\n                </li>\n                <li id=\"chart_period_6h_h\" name=\"6h\" style=\"display: none;\">\n                    <a class=\"chart_str_period_6h\">6小时</a>\n                </li>\n                <li id=\"chart_period_4h_h\" name=\"4h\" style=\"display: none;\">\n                    <a class=\"chart_str_period_4h\">4小时</a>\n                </li>\n                <li id=\"chart_period_2h_h\" name=\"2h\" style=\"display: none;\">\n                    <a class=\"chart_str_period_2h\">2小时</a>\n                </li>\n                <li id=\"chart_period_1h_h\" name=\"1h\" style=\"display: none;\">\n                    <a class=\"chart_str_period_1h\">1小时</a>\n                </li>\n                <li id=\"chart_period_30m_h\" name=\"30m\" style=\"display: none;\">\n                    <a class=\"chart_str_period_30m\">30分钟</a>\n                </li>\n                <li id=\"chart_period_15m_h\" name=\"15m\" style=\"display: none;\">\n                    <a class=\"chart_str_period_15m\">15分钟</a>\n                </li>\n                <li id=\"chart_period_5m_h\" name=\"5m\" style=\"display: none;\">\n                    <a class=\"chart_str_period_5m\">5分钟</a>\n                </li>\n                <li id=\"chart_period_3m_h\" name=\"3m\" style=\"display: none;\">\n                    <a class=\"chart_str_period_3m\">3分钟</a>\n                </li>\n                <li id=\"chart_period_1m_h\" name=\"1m\" style=\"display: none;\">\n                    <a class=\"chart_str_period_1m selected\">1分钟</a>\n                </li>\n                <li id=\"chart_period_line_h\" name=\"line\" style=\"display: none;\">\n                    <a class=\"chart_str_period_line\">分时</a>\n                </li>\n            </ul>\n        </div>\n        <div id=\"chart_show_indicator\" class=\"chart_toolbar_button chart_str_indicator_cap selected\">技术指标</div>\n        <div id=\"chart_show_tools\" class=\"chart_toolbar_button chart_str_tools_cap\">画线工具</div>\n        <div id=\"chart_toolbar_theme\">\n            <div class=\"chart_toolbar_label chart_str_theme_cap\">\n                主题选择\n            </div>\n            <a name=\"dark\" class=\"chart_icon chart_icon_theme_dark selected\"></a>\n            <a name=\"light\" class=\"chart_icon chart_icon_theme_light\"></a>\n        </div>\n        <div class=\"chart_dropdown\" id=\"chart_dropdown_settings\">\n            <div class=\"chart_dropdown_t\"><a class=\"chart_str_settings\">更多</a></div>\n\n            <div class=\"chart_dropdown_data\" style=\"margin-left: -142px;\">\n                <table>\n                    <tbody>\n                    <tr id=\"chart_select_main_indicator\">\n                        <td class=\"chart_str_main_indicator\">主指标</td>\n                        <td>\n                            <ul>\n                                <li><a name=\"MA\" class=\"selected\">MA</a></li>\n                                <li><a name=\"EMA\" class=\"\">EMA</a></li>\n                                <li><a name=\"BOLL\" class=\"\">BOLL</a></li>\n                                <li><a name=\"SAR\" class=\"\">SAR</a></li>\n                                <li><a name=\"NONE\" class=\"\">None</a></li>\n                            </ul>\n                        </td>\n                    </tr>\n\n                    <tr id=\"chart_select_chart_style\">\n                        <td class=\"chart_str_chart_style\">主图样式</td>\n                        <td>\n                            <ul>\n                                <li><a class=\"selected\">CandleStick</a></li>\n                                <li><a>CandleStickHLC</a></li>\n                                <li><a class=\"\">OHLC</a></li>\n                            </ul>\n                        </td>\n                    </tr>\n\n                    <tr id=\"chart_select_theme\" style=\"display: none;\">\n                        <td class=\"chart_str_theme\">主题选择</td>\n                        <td>\n                            <ul>\n                                <li>\n                                    <a name=\"dark\" class=\"chart_icon chart_icon_theme_dark selected\"></a>\n                                </li>\n\n                                <li>\n                                    <a name=\"light\" class=\"chart_icon chart_icon_theme_light\"></a>\n                                </li>\n                            </ul>\n                        </td>\n                    </tr>\n                    <tr id=\"chart_enable_tools\" style=\"display: none;\">\n                        <td class=\"chart_str_tools\">画线工具</td>\n                        <td>\n                            <ul>\n                                <li><a name=\"on\" class=\"chart_str_on\">开启</a></li>\n                                <li><a name=\"off\" class=\"chart_str_off selected\">关闭</a></li>\n\n                            </ul>\n\n                        </td>\n                    </tr>\n                    <tr id=\"chart_enable_indicator\" style=\"display: none;\">\n                        <td class=\"chart_str_indicator\">技术指标</td>\n                        <td>\n                            <ul>\n                                <li><a name=\"on\" class=\"chart_str_on selected\">开启</a></li>\n                                <li><a name=\"off\" class=\"chart_str_off\">关闭</a></li>\n                            </ul>\n                        </td>\n                    </tr>\n                    <tr>\n                        <td></td>\n                        <td>\n                            <ul>\n                                <li>\n                                    <a id=\"chart_btn_parameter_settings\" class=\"chart_str_indicator_parameters\">指标参数设置</a>\n                                </li>\n                            </ul>\n                        </td>\n                    </tr>\n                    </tbody>\n                </table>\n            </div>\n        </div>\n\n        <div class=\"chart_dropdown\" id=\"chart_language_setting_div\" style=\"padding-left: 5px;\">\n            <div class=\"chart_dropdown_t\">\n                <a class=\"chart_language_setting\">语言(LANG)</a>\n            </div>\n            <div class=\"chart_dropdown_data\" style=\"padding-top: 15px; margin-left: -12px;\">\n                <ul>\n                    <li style=\"height: 25px;\">\n                        <a name=\"zh-cn\" class=\"selected\">简体中文(zh-CN)</a>\n                    </li>\n                    <li style=\"height: 25px;\">\n                        <a name=\"en-us\">English(en-US)</a>\n                    </li>\n                    <li style=\"height: 25px;\">\n                        <a name=\"zh-tw\">繁體中文(zh-HK)</a>\n                    </li>\n                </ul>\n            </div>\n        </div>\n        <div id=\"chart_updated_time\">\n            <div id=\"sizeIcon\" class=\"chart_BoxSize\"></div>\n\n        </div>\n    </div>\n               <!-- ToolPanel -->\n    <div id=\"chart_toolpanel\">\n        <div class=\"chart_toolpanel_separator\"></div>\n\n        <div class=\"chart_toolpanel_button\">\n            <div class=\"chart_toolpanel_icon\" id=\"chart_Cursor\" name=\"Cursor\"></div>\n            <div class=\"chart_toolpanel_tip chart_str_cursor\">\n                光标\n            </div>\n        </div>\n        <div class=\"chart_toolpanel_button\">\n            <div class=\"chart_toolpanel_icon\" id=\"chart_CrossCursor\" name=\"CrossCursor\"></div>\n            <div class=\"chart_toolpanel_tip chart_str_cross_cursor\">\n                十字光标\n            </div>\n        </div>\n        <div class=\"chart_toolpanel_button\">\n            <div class=\"chart_toolpanel_icon\" id=\"chart_SegLine\" name=\"SegLine\"></div>\n            <div class=\"chart_toolpanel_tip chart_str_seg_line\">\n                线段\n            </div>\n        </div>\n        <div class=\"chart_toolpanel_button\">\n            <div class=\"chart_toolpanel_icon\" id=\"chart_StraightLine\" name=\"StraightLine\"></div>\n            <div class=\"chart_toolpanel_tip chart_str_straight_line\">\n                直线\n            </div>\n        </div>\n        <div class=\"chart_toolpanel_button\">\n            <div class=\"chart_toolpanel_icon\" id=\"chart_RayLine\" name=\"RayLine\"></div>\n            <div class=\"chart_toolpanel_tip chart_str_ray_line\">\n                射线\n            </div>\n        </div>\n        <div class=\"chart_toolpanel_button\">\n            <div class=\"chart_toolpanel_icon\" id=\"chart_ArrowLine\" name=\"ArrowLine\"></div>\n            <div class=\"chart_toolpanel_tip chart_str_arrow_line\">\n                箭头\n            </div>\n        </div>\n        <div class=\"chart_toolpanel_button\">\n            <div class=\"chart_toolpanel_icon\" id=\"chart_HoriSegLine\" name=\"HoriSegLine\"></div>\n            <div class=\"chart_toolpanel_tip chart_str_horz_seg_line\">\n                水平线段\n            </div>\n        </div>\n        <div class=\"chart_toolpanel_button\">\n            <div class=\"chart_toolpanel_icon\" id=\"chart_HoriStraightLine\" name=\"HoriStraightLine\"></div>\n            <div class=\"chart_toolpanel_tip chart_str_horz_straight_line\">\n                水平直线\n            </div>\n        </div>\n        <div class=\"chart_toolpanel_button\">\n            <div class=\"chart_toolpanel_icon\" id=\"chart_HoriRayLine\" name=\"HoriRayLine\"></div>\n            <div class=\"chart_toolpanel_tip chart_str_horz_ray_line\">\n                水平射线\n            </div>\n        </div>\n        <div class=\"chart_toolpanel_button\">\n            <div class=\"chart_toolpanel_icon\" id=\"chart_VertiStraightLine\" name=\"VertiStraightLine\"></div>\n            <div class=\"chart_toolpanel_tip chart_str_vert_straight_line\">\n                垂直直线\n            </div>\n        </div>\n        <div class=\"chart_toolpanel_button\">\n            <div class=\"chart_toolpanel_icon\" id=\"chart_PriceLine\" name=\"PriceLine\"></div>\n            <div class=\"chart_toolpanel_tip chart_str_price_line\">\n                价格线\n            </div>\n        </div>\n        <div class=\"chart_toolpanel_button\">\n            <div class=\"chart_toolpanel_icon\" id=\"chart_TriParallelLine\" name=\"TriParallelLine\"></div>\n            <div class=\"chart_toolpanel_tip chart_str_tri_parallel_line\">\n                价格通道线\n            </div>\n        </div>\n        <div class=\"chart_toolpanel_button\">\n            <div class=\"chart_toolpanel_icon\" id=\"chart_BiParallelLine\" name=\"BiParallelLine\"></div>\n            <div class=\"chart_toolpanel_tip chart_str_bi_parallel_line\">\n                平行直线\n            </div>\n        </div>\n        <div class=\"chart_toolpanel_button\">\n            <div class=\"chart_toolpanel_icon\" id=\"chart_BiParallelRayLine\" name=\"BiParallelRayLine\"></div>\n            <div class=\"chart_toolpanel_tip chart_str_bi_parallel_ray\">\n                平行射线\n            </div>\n        </div>\n        <div class=\"chart_toolpanel_button\">\n            <div class=\"chart_toolpanel_icon\" id=\"chart_DrawFibRetrace\" name=\"DrawFibRetrace\"></div>\n            <div class=\"chart_toolpanel_tip chart_str_fib_retrace\">\n                斐波纳契回调\n            </div>\n        </div>\n        <div class=\"chart_toolpanel_button\">\n            <div class=\"chart_toolpanel_icon\" id=\"chart_DrawFibFans\" name=\"DrawFibFans\"></div>\n            <div class=\"chart_toolpanel_tip chart_str_fib_fans\">\n                斐波纳契扇形\n            </div>\n        </div>\n        <div style=\"padding-left: 3px;padding-top: 10px;\">\n            <button style=\"color: red;\" id=\"clearCanvas\" title=\"Clear All\">X</button>\n        </div>\n    </div>\n    <div id=\"chart_canvasGroup\" class=\"temp\">\n        <canvas class=\"chart_canvas\" id=\"chart_mainCanvas\" style=\"cursor: default;\"></canvas>\n        <canvas class=\"chart_canvas\" id=\"chart_overlayCanvas\" style=\"cursor: default;\"></canvas>\n    </div>\n    <div id=\"chart_tabbar\">\n        <ul>\n            <li><a name=\"MACD\" class=\"\">MACD</a></li>\n\n            <li><a name=\"KDJ\" class=\"\">KDJ</a></li>\n\n            <li><a name=\"StochRSI\" class=\"\">StochRSI</a></li>\n\n            <li><a name=\"RSI\" class=\"\">RSI</a></li>\n\n            <li><a name=\"DMI\" class=\"\">DMI</a></li>\n\n            <li><a name=\"OBV\" class=\"\">OBV</a></li>\n\n            <li><a name=\"BOLL\" class=\"\">BOLL</a></li>\n\n            <li><a name=\"SAR\" class=\"\">SAR</a></li>\n\n            <li><a name=\"DMA\" class=\"\">DMA</a></li>\n\n            <li><a name=\"TRIX\" class=\"\">TRIX</a></li>\n\n            <li><a name=\"BRAR\" class=\"\">BRAR</a></li>\n\n            <li><a name=\"VR\" class=\"\">VR</a></li>\n\n            <li><a name=\"EMV\" class=\"\">EMV</a></li>\n\n            <li><a name=\"WR\" class=\"\">WR</a></li>\n\n            <li><a name=\"ROC\" class=\"\">ROC</a></li>\n\n            <li><a name=\"MTM\" class=\"\">MTM</a></li>\n\n            <li><a name=\"PSY\">PSY</a></li>\n\n        </ul>\n\n    </div>\n    <div id=\"chart_parameter_settings\">\n        <h2 class=\"chart_str_indicator_parameters\">指标参数设置</h2>\n        <table>\n            <tbody>\n            <tr>\n                <th>MA</th>\n                <td><input name=\"MA\"><input name=\"MA\"><input name=\"MA\"><input name=\"MA\"><br><input\n                        name=\"MA\"><input\n                        name=\"MA\">\n                </td>\n                <td>\n                    <button class=\"chart_str_default\">默认值</button>\n                </td>\n                <th>DMA</th>\n                <td><input name=\"DMA\"><input name=\"DMA\"><input name=\"DMA\"></td>\n                <td>\n                    <button class=\"chart_str_default\">默认值</button>\n                </td>\n            </tr>\n            <tr>\n                <th>EMA</th>\n                <td>\n                    <input name=\"EMA\"><input name=\"EMA\"><input name=\"EMA\"><input name=\"EMA\"><br>\n                    <input name=\"EMA\"><input name=\"EMA\">\n                </td>\n                <td>\n                    <button class=\"chart_str_default\">默认值</button>\n                </td>\n\n                <th>TRIX</th>\n                <td><input name=\"TRIX\"><input name=\"TRIX\"></td>\n                <td>\n                    <button class=\"chart_str_default\">默认值</button>\n                </td>\n            </tr>\n\n            <tr>\n                <th>VOLUME</th>\n                <td><input name=\"VOLUME\"><input name=\"VOLUME\"></td>\n                <td>\n                    <button class=\"chart_str_default\">默认值</button>\n                </td>\n\n                <th>BRAR</th>\n                <td><input name=\"BRAR\"></td>\n                <td>\n                    <button class=\"chart_str_default\">默认值</button>\n                </td>\n            </tr>\n            <tr>\n                <th>MACD</th>\n                <td>\n                    <input name=\"MACD\"><input name=\"MACD\"><input name=\"MACD\">\n                </td>\n                <td>\n                    <button class=\"chart_str_default\">默认值</button>\n                </td>\n\n                <th>VR</th>\n                <td><input name=\"VR\"><input name=\"VR\"></td>\n                <td>\n                    <button class=\"chart_str_default\">默认值</button>\n                </td>\n            </tr>\n            <tr>\n                <th>KDJ</th>\n                <td>\n                    <input name=\"KDJ\"><input name=\"KDJ\"><input name=\"KDJ\">\n                </td>\n                <td>\n                    <button class=\"chart_str_default\">默认值</button>\n                </td>\n\n                <th>EMV</th>\n                <td>\n                    <input name=\"EMV\"><input name=\"EMV\">\n                </td>\n                <td>\n                    <button class=\"chart_str_default\">默认值</button>\n                </td>\n            </tr>\n            <tr>\n                <th>StochRSI</th>\n                <td>\n                    <input name=\"StochRSI\"><input name=\"StochRSI\"><input name=\"StochRSI\"><input name=\"StochRSI\">\n                </td>\n                <td>\n                    <button class=\"chart_str_default\">默认值</button>\n                </td>\n\n                <th>WR</th>\n                <td>\n                    <input name=\"WR\"><input name=\"WR\">\n                </td>\n                <td>\n                    <button class=\"chart_str_default\">默认值</button>\n                </td>\n            </tr>\n            <tr>\n                <th>RSI</th>\n                <td>\n                    <input name=\"RSI\"><input name=\"RSI\"><input name=\"RSI\">\n                </td>\n                <td>\n                    <button class=\"chart_str_default\">默认值</button>\n                </td>\n\n                <th>ROC</th>\n                <td>\n                    <input name=\"ROC\"><input name=\"ROC\">\n                </td>\n                <td>\n                    <button class=\"chart_str_default\">默认值</button>\n                </td>\n            </tr>\n            <tr>\n                <th>DMI</th>\n                <td>\n                    <input name=\"DMI\"><input name=\"DMI\">\n                </td>\n                <td>\n                    <button class=\"chart_str_default\">默认值</button>\n                </td>\n\n                <th>MTM</th>\n                <td>\n                    <input name=\"MTM\"><input name=\"MTM\">\n                </td>\n                <td>\n                    <button class=\"chart_str_default\">默认值</button>\n                </td>\n            </tr>\n            <tr>\n                <th>OBV</th>\n                <td>\n                    <input name=\"OBV\">\n                </td>\n                <td>\n                    <button class=\"chart_str_default\">默认值</button>\n                </td>\n\n                <th>PSY</th>\n                <td>\n                    <input name=\"PSY\"><input name=\"PSY\">\n                </td>\n                <td>\n                    <button class=\"chart_str_default\">默认值</button>\n                </td>\n            </tr>\n            <tr>\n                <th>BOLL</th>\n                <td>\n                    <input name=\"BOLL\">\n                </td>\n                <td>\n                    <button class=\"chart_str_default\">默认值</button>\n                </td>\n            </tr>\n            </tbody>\n        </table>\n        <div id=\"close_settings\"><a class=\"chart_str_close\">关闭</a></div>\n    </div>\n    <!-- Loading -->\n    <div id=\"chart_loading\" class=\"chart_str_loading\">正在读取数据...</div>\n</div>\n<div style=\"display: none\" id=\"chart_language_switch_tmp\">\n    <span name=\"chart_str_period\" zh_tw=\"週期\" zh_cn=\"周期\" en_us=\"TIME\"></span>\n    <span name=\"chart_str_period_line\" zh_tw=\"分時\" zh_cn=\"分时\" en_us=\"Line\"></span>\n    <span name=\"chart_str_period_1m\" zh_tw=\"1分鐘\" zh_cn=\"1分钟\" en_us=\"1m\"></span>\n    <span name=\"chart_str_period_3m\" zh_tw=\"3分鐘\" zh_cn=\"3分钟\" en_us=\"3m\"></span>\n    <span name=\"chart_str_period_5m\" zh_tw=\"5分鐘\" zh_cn=\"5分钟\" en_us=\"5m\"></span>\n    <span name=\"chart_str_period_15m\" zh_tw=\"15分鐘\" zh_cn=\"15分钟\" en_us=\"15m\"></span>\n    <span name=\"chart_str_period_30m\" zh_tw=\"30分鐘\" zh_cn=\"30分钟\" en_us=\"30m\"></span>\n    <span name=\"chart_str_period_1h\" zh_tw=\"1小時\" zh_cn=\"1小时\" en_us=\"1h\"></span>\n    <span name=\"chart_str_period_2h\" zh_tw=\"2小時\" zh_cn=\"2小时\" en_us=\"2h\"></span>\n    <span name=\"chart_str_period_4h\" zh_tw=\"4小時\" zh_cn=\"4小时\" en_us=\"4h\"></span>\n    <span name=\"chart_str_period_6h\" zh_tw=\"6小時\" zh_cn=\"6小时\" en_us=\"6h\"></span>\n    <span name=\"chart_str_period_12h\" zh_tw=\"12小時\" zh_cn=\"12小时\" en_us=\"12h\"></span>\n    <span name=\"chart_str_period_1d\" zh_tw=\"日線\" zh_cn=\"日线\" en_us=\"1d\"></span>\n    <span name=\"chart_str_period_3d\" zh_tw=\"3日\" zh_cn=\"3日\" en_us=\"3d\"></span>\n    <span name=\"chart_str_period_1w\" zh_tw=\"周線\" zh_cn=\"周线\" en_us=\"1w\"></span>\n    <span name=\"chart_str_settings\" zh_tw=\"更多\" zh_cn=\"更多\" en_us=\"MORE\"></span>\n    <span name=\"chart_setting_main_indicator\" zh_tw=\"均線設置\" zh_cn=\"均线设置\" en_us=\"Main Indicator\"></span>\n    <span name=\"chart_setting_main_indicator_none\" zh_tw=\"關閉均線\" zh_cn=\"关闭均线\" en_us=\"None\"></span>\n    <span name=\"chart_setting_indicator_parameters\" zh_tw=\"指標參數設置\" zh_cn=\"指标参数设置\" en_us=\"Indicator Parameters\"></span>\n    <span name=\"chart_str_chart_style\" zh_tw=\"主圖樣式\" zh_cn=\"主图样式\" en_us=\"Chart Style\"></span>\n    <span name=\"chart_str_main_indicator\" zh_tw=\"主指標\" zh_cn=\"主指标\" en_us=\"Main Indicator\"></span>\n    <span name=\"chart_str_indicator\" zh_tw=\"技術指標\" zh_cn=\"技术指标\" en_us=\"Indicator\"></span>\n    <span name=\"chart_str_indicator_cap\" zh_tw=\"技術指標\" zh_cn=\"技术指标\" en_us=\"INDICATOR\"></span>\n    <span name=\"chart_str_tools\" zh_tw=\"畫線工具\" zh_cn=\"画线工具\" en_us=\"Tools\"></span>\n    <span name=\"chart_str_tools_cap\" zh_tw=\"畫線工具\" zh_cn=\"画线工具\" en_us=\"TOOLS\"></span>\n    <span name=\"chart_str_theme\" zh_tw=\"主題選擇\" zh_cn=\"主题选择\" en_us=\"Theme\"></span>\n    <span name=\"chart_str_theme_cap\" zh_tw=\"主題選擇\" zh_cn=\"主题选择\" en_us=\"THEME\"></span>\n    <span name=\"chart_language_setting\" zh_tw=\"語言(LANG)\" zh_cn=\"语言(LANG)\" en_us=\"LANGUAGE\"></span>\n    <span name=\"chart_exchanges_setting\" zh_tw=\"更多市場\" zh_cn=\"更多市场\" en_us=\"MORE MARKETS\"></span>\n    <span name=\"chart_othercoin_setting\" zh_tw=\"其它市場\" zh_cn=\"其它市场\" en_us=\"OTHER MARKETS\"></span>\n\n    <span name=\"chart_str_none\" zh_tw=\"關閉\" zh_cn=\"关闭\" en_us=\"None\"></span>\n    <span name=\"chart_str_theme_dark\" zh_tw=\"深色主題\" zh_cn=\"深色主题\" en_us=\"Dark\"></span>\n    <span name=\"chart_str_theme_light\" zh_tw=\"淺色主題\" zh_cn=\"浅色主题\" en_us=\"Light\"></span>\n    <span name=\"chart_str_on\" zh_tw=\"開啟\" zh_cn=\"开启\" en_us=\"On\"></span>\n    <span name=\"chart_str_off\" zh_tw=\"關閉\" zh_cn=\"关闭\" en_us=\"Off\"></span>\n    <span name=\"chart_str_close\" zh_tw=\"關閉\" zh_cn=\"关闭\" en_us=\"CLOSE\"></span>\n    <span name=\"chart_str_default\" zh_tw=\"默認值\" zh_cn=\"默认值\" en_us=\"default\"></span>\n    <span name=\"chart_str_loading\" zh_tw=\"正在讀取數據...\" zh_cn=\"正在读取数据...\" en_us=\"Loading...\"></span>\n    <span name=\"chart_str_indicator_parameters\" zh_tw=\"指標參數設置\" zh_cn=\"指标参数设置\" en_us=\"Indicator Parameters\"></span>\n    <span name=\"chart_str_cursor\" zh_tw=\"光標\" zh_cn=\"光标\" en_us=\"Cursor\"></span>\n    <span name=\"chart_str_cross_cursor\" zh_tw=\"十字光標\" zh_cn=\"十字光标\" en_us=\"Cross Cursor\"></span>\n    <span name=\"chart_str_seg_line\" zh_tw=\"線段\" zh_cn=\"线段\" en_us=\"Trend Line\"></span>\n    <span name=\"chart_str_straight_line\" zh_tw=\"直線\" zh_cn=\"直线\" en_us=\"Extended\"></span>\n    <span name=\"chart_str_ray_line\" zh_tw=\"射線\" zh_cn=\"射线\" en_us=\"Ray\"></span>\n    <span name=\"chart_str_arrow_line\" zh_tw=\"箭頭\" zh_cn=\"箭头\" en_us=\"Arrow\"></span>\n    <span name=\"chart_str_horz_seg_line\" zh_tw=\"水平線段\" zh_cn=\"水平线段\" en_us=\"Horizontal Line\"></span>\n    <span name=\"chart_str_horz_straight_line\" zh_tw=\"水平直線\" zh_cn=\"水平直线\" en_us=\"Horizontal Extended\"></span>\n    <span name=\"chart_str_horz_ray_line\" zh_tw=\"水平射線\" zh_cn=\"水平射线\" en_us=\"Horizontal Ray\"></span>\n    <span name=\"chart_str_vert_straight_line\" zh_tw=\"垂直直線\" zh_cn=\"垂直直线\" en_us=\"Vertical Extended\"></span>\n    <span name=\"chart_str_price_line\" zh_tw=\"價格線\" zh_cn=\"价格线\" en_us=\"Price Line\"></span>\n    <span name=\"chart_str_tri_parallel_line\" zh_tw=\"價格通道線\" zh_cn=\"价格通道线\" en_us=\"Parallel Channel\"></span>\n    <span name=\"chart_str_bi_parallel_line\" zh_tw=\"平行直線\" zh_cn=\"平行直线\" en_us=\"Parallel Lines\"></span>\n    <span name=\"chart_str_bi_parallel_ray\" zh_tw=\"平行射線\" zh_cn=\"平行射线\" en_us=\"Parallel Rays\"></span>\n    <span name=\"chart_str_fib_retrace\" zh_tw=\"斐波納契回調\" zh_cn=\"斐波纳契回调\" en_us=\"Fibonacci Retracements\"></span>\n    <span name=\"chart_str_fib_fans\" zh_tw=\"斐波納契扇形\" zh_cn=\"斐波纳契扇形\" en_us=\"Fibonacci Fans\"></span>\n    <span name=\"chart_str_updated\" zh_tw=\"更新於\" zh_cn=\"更新于\" en_us=\"Updated\"></span>\n    <span name=\"chart_str_ago\" zh_tw=\"前\" zh_cn=\"前\" en_us=\"ago\"></span>\n</div>\n";
+module.exports = "<div class=\"chart_container dark\">\r\n    <div id=\"chart_dom_elem_cache\"></div>\r\n    <!-- ToolBar -->\r\n    <div id=\"chart_toolbar\">\r\n        <div class=\"symbol-title\" id=\"symbol_title\"></div>\r\n        <div class=\"chart_toolbar_minisep\"></div>\r\n        <!-- Periods -->\r\n        <div class=\"chart_dropdown\" id=\"chart_toolbar_periods_vert\">\r\n            <div class=\"chart_dropdown_t\"><a class=\"chart_str_period\">周期</a></div>\r\n            <div class=\"chart_dropdown_data\" style=\"margin-left: -58px;\">\r\n                <table>\r\n                    <tbody>\r\n                    <tr>\r\n                        <td>\r\n                            <ul>\r\n                                <li id=\"chart_period_1w_v\" style=\"display:none;\" name=\"1w\">\r\n                                    <a class=\"chart_str_period_1w\">周线</a>\r\n                                </li>\r\n                                <li id=\"chart_period_3d_v\" style=\"display:none;\" name=\"3d\">\r\n                                    <a class=\"chart_str_period_3d\">3日</a>\r\n                                </li>\r\n                                <li id=\"chart_period_1d_v\" style=\"display:none;\" name=\"1d\">\r\n                                    <a class=\"chart_str_period_1d\">日线</a>\r\n                                </li>\r\n                                <li id=\"chart_period_12h_v\" style=\"display:none;\" name=\"12h\">\r\n                                    <a class=\"chart_str_period_12h\">12小时</a>\r\n                                </li>\r\n                                <li id=\"chart_period_6h_v\" style=\"display:none;\" name=\"6h\">\r\n                                    <a class=\"chart_str_period_6h\">6小时</a>\r\n                                </li>\r\n                                <li id=\"chart_period_4h_v\" style=\"display:none;\" name=\"4h\">\r\n                                    <a class=\"chart_str_period_4h\">4小时</a>\r\n                                </li>\r\n                                <li id=\"chart_period_2h_v\" style=\"display:none;\" name=\"2h\">\r\n                                    <a class=\"chart_str_period_2h\">2小时</a>\r\n                                </li>\r\n                                <li id=\"chart_period_1h_v\" style=\"display:none;\" name=\"1h\">\r\n                                    <a class=\"chart_str_period_1h\">1小时</a>\r\n                                </li>\r\n                            </ul>\r\n                        </td>\r\n\r\n                    </tr>\r\n\r\n                    <tr>\r\n                        <td>\r\n                            <ul>\r\n                                <li id=\"chart_period_30m_v\" style=\"display:none;\" name=\"30m\">\r\n                                    <a class=\"chart_str_period_30m\">30分钟</a>\r\n                                </li>\r\n                                <li id=\"chart_period_15m_v\" style=\"display:none;\" name=\"15m\">\r\n                                    <a class=\"chart_str_period_15m\">15分钟</a>\r\n                                </li>\r\n                                <li id=\"chart_period_5m_v\" style=\"display:none;\" name=\"5m\">\r\n                                    <a class=\"chart_str_period_5m\">5分钟</a>\r\n                                </li>\r\n                                <li id=\"chart_period_3m_v\" style=\"display:none;\" name=\"3m\">\r\n                                    <a class=\"chart_str_period_3m\">3分钟</a>\r\n                                </li>\r\n                                <li id=\"chart_period_1m_v\" style=\"display:none;\" name=\"1m\">\r\n                                    <a class=\"chart_str_period_1m selected\">1分钟</a>\r\n                                </li>\r\n                                <li id=\"chart_period_line_v\" style=\"display:none;\" name=\"line\">\r\n                                    <a class=\"chart_str_period_line\">分时</a>\r\n                                </li>\r\n                            </ul>\r\n                        </td>\r\n                    </tr>\r\n                    </tbody>\r\n                </table>\r\n            </div>\r\n        </div>\r\n        <div id=\"chart_toolbar_periods_horz\">\r\n            <ul class=\"chart_toolbar_tabgroup\" style=\"padding-left:5px; padding-right:11px;\">\r\n                <li id=\"chart_period_1w_h\" name=\"1w\" style=\"display: none;\">\r\n                    <a class=\"chart_str_period_1w\">周线</a>\r\n                </li>\r\n                <li id=\"chart_period_3d_h\" name=\"3d\" style=\"display: none;\">\r\n                    <a class=\"chart_str_period_3d\">3日</a>\r\n                </li>\r\n                <li id=\"chart_period_1d_h\" name=\"1d\" style=\"display: none;\">\r\n                    <a class=\"chart_str_period_1d\">日线</a>\r\n                </li>\r\n                <li id=\"chart_period_12h_h\" name=\"12h\" style=\"display: none;\">\r\n                    <a class=\"chart_str_period_12h\">12小时</a>\r\n                </li>\r\n                <li id=\"chart_period_6h_h\" name=\"6h\" style=\"display: none;\">\r\n                    <a class=\"chart_str_period_6h\">6小时</a>\r\n                </li>\r\n                <li id=\"chart_period_4h_h\" name=\"4h\" style=\"display: none;\">\r\n                    <a class=\"chart_str_period_4h\">4小时</a>\r\n                </li>\r\n                <li id=\"chart_period_2h_h\" name=\"2h\" style=\"display: none;\">\r\n                    <a class=\"chart_str_period_2h\">2小时</a>\r\n                </li>\r\n                <li id=\"chart_period_1h_h\" name=\"1h\" style=\"display: none;\">\r\n                    <a class=\"chart_str_period_1h\">1小时</a>\r\n                </li>\r\n                <li id=\"chart_period_30m_h\" name=\"30m\" style=\"display: none;\">\r\n                    <a class=\"chart_str_period_30m\">30分钟</a>\r\n                </li>\r\n                <li id=\"chart_period_15m_h\" name=\"15m\" style=\"display: none;\">\r\n                    <a class=\"chart_str_period_15m\">15分钟</a>\r\n                </li>\r\n                <li id=\"chart_period_5m_h\" name=\"5m\" style=\"display: none;\">\r\n                    <a class=\"chart_str_period_5m\">5分钟</a>\r\n                </li>\r\n                <li id=\"chart_period_3m_h\" name=\"3m\" style=\"display: none;\">\r\n                    <a class=\"chart_str_period_3m\">3分钟</a>\r\n                </li>\r\n                <li id=\"chart_period_1m_h\" name=\"1m\" style=\"display: none;\">\r\n                    <a class=\"chart_str_period_1m selected\">1分钟</a>\r\n                </li>\r\n                <li id=\"chart_period_line_h\" name=\"line\" style=\"display: none;\">\r\n                    <a class=\"chart_str_period_line\">分时</a>\r\n                </li>\r\n            </ul>\r\n        </div>\r\n        <div id=\"chart_show_indicator\" class=\"chart_toolbar_button chart_str_indicator_cap selected\">技术指标</div>\r\n        <div id=\"chart_show_tools\" class=\"chart_toolbar_button chart_str_tools_cap\">画线工具</div>\r\n        <div id=\"chart_toolbar_theme\">\r\n            <div class=\"chart_toolbar_label chart_str_theme_cap\">\r\n                主题选择\r\n            </div>\r\n            <a name=\"dark\" class=\"chart_icon chart_icon_theme_dark selected\"></a>\r\n            <a name=\"light\" class=\"chart_icon chart_icon_theme_light\"></a>\r\n        </div>\r\n        <div class=\"chart_dropdown\" id=\"chart_dropdown_settings\">\r\n            <div class=\"chart_dropdown_t\"><a class=\"chart_str_settings\">更多</a></div>\r\n\r\n            <div class=\"chart_dropdown_data\" style=\"margin-left: -142px;\">\r\n                <table>\r\n                    <tbody>\r\n                    <tr id=\"chart_select_main_indicator\">\r\n                        <td class=\"chart_str_main_indicator\">主指标</td>\r\n                        <td>\r\n                            <ul>\r\n                                <li><a name=\"MA\" class=\"selected\">MA</a></li>\r\n                                <li><a name=\"EMA\" class=\"\">EMA</a></li>\r\n                                <li><a name=\"BOLL\" class=\"\">BOLL</a></li>\r\n                                <li><a name=\"SAR\" class=\"\">SAR</a></li>\r\n                                <li><a name=\"NONE\" class=\"\">None</a></li>\r\n                            </ul>\r\n                        </td>\r\n                    </tr>\r\n\r\n                    <tr id=\"chart_select_chart_style\">\r\n                        <td class=\"chart_str_chart_style\">主图样式</td>\r\n                        <td>\r\n                            <ul>\r\n                                <li><a class=\"selected\">CandleStick</a></li>\r\n                                <li><a>CandleStickHLC</a></li>\r\n                                <li><a class=\"\">OHLC</a></li>\r\n                            </ul>\r\n                        </td>\r\n                    </tr>\r\n\r\n                    <tr id=\"chart_select_theme\" style=\"display: none;\">\r\n                        <td class=\"chart_str_theme\">主题选择</td>\r\n                        <td>\r\n                            <ul>\r\n                                <li>\r\n                                    <a name=\"dark\" class=\"chart_icon chart_icon_theme_dark selected\"></a>\r\n                                </li>\r\n\r\n                                <li>\r\n                                    <a name=\"light\" class=\"chart_icon chart_icon_theme_light\"></a>\r\n                                </li>\r\n                            </ul>\r\n                        </td>\r\n                    </tr>\r\n                    <tr id=\"chart_enable_tools\" style=\"display: none;\">\r\n                        <td class=\"chart_str_tools\">画线工具</td>\r\n                        <td>\r\n                            <ul>\r\n                                <li><a name=\"on\" class=\"chart_str_on\">开启</a></li>\r\n                                <li><a name=\"off\" class=\"chart_str_off selected\">关闭</a></li>\r\n\r\n                            </ul>\r\n\r\n                        </td>\r\n                    </tr>\r\n                    <tr id=\"chart_enable_indicator\" style=\"display: none;\">\r\n                        <td class=\"chart_str_indicator\">技术指标</td>\r\n                        <td>\r\n                            <ul>\r\n                                <li><a name=\"on\" class=\"chart_str_on selected\">开启</a></li>\r\n                                <li><a name=\"off\" class=\"chart_str_off\">关闭</a></li>\r\n                            </ul>\r\n                        </td>\r\n                    </tr>\r\n                    <tr>\r\n                        <td></td>\r\n                        <td>\r\n                            <ul>\r\n                                <li>\r\n                                    <a id=\"chart_btn_parameter_settings\" class=\"chart_str_indicator_parameters\">指标参数设置</a>\r\n                                </li>\r\n                            </ul>\r\n                        </td>\r\n                    </tr>\r\n                    </tbody>\r\n                </table>\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"chart_dropdown\" id=\"chart_language_setting_div\" style=\"padding-left: 5px;\">\r\n            <div class=\"chart_dropdown_t\">\r\n                <a class=\"chart_language_setting\">语言(LANG)</a>\r\n            </div>\r\n            <div class=\"chart_dropdown_data\" style=\"padding-top: 15px; margin-left: -12px;\">\r\n                <ul>\r\n                    <li style=\"height: 25px;\">\r\n                        <a name=\"zh-cn\" class=\"selected\">简体中文(zh-CN)</a>\r\n                    </li>\r\n                    <li style=\"height: 25px;\">\r\n                        <a name=\"en-us\">English(en-US)</a>\r\n                    </li>\r\n                    <li style=\"height: 25px;\">\r\n                        <a name=\"zh-tw\">繁體中文(zh-HK)</a>\r\n                    </li>\r\n                </ul>\r\n            </div>\r\n        </div>\r\n        <div id=\"chart_updated_time\">\r\n            <div id=\"sizeIcon\" class=\"chart_BoxSize\"></div>\r\n\r\n        </div>\r\n    </div>\r\n    <!-- ToolPanel -->\r\n    <div id=\"chart_toolpanel\">\r\n        <div class=\"chart_toolpanel_separator\"></div>\r\n\r\n        <div class=\"chart_toolpanel_button\">\r\n            <div class=\"chart_toolpanel_icon\" id=\"chart_Cursor\" name=\"Cursor\"></div>\r\n            <div class=\"chart_toolpanel_tip chart_str_cursor\">\r\n                光标\r\n            </div>\r\n        </div>\r\n        <div class=\"chart_toolpanel_button\">\r\n            <div class=\"chart_toolpanel_icon\" id=\"chart_CrossCursor\" name=\"CrossCursor\"></div>\r\n            <div class=\"chart_toolpanel_tip chart_str_cross_cursor\">\r\n                十字光标\r\n            </div>\r\n        </div>\r\n        <div class=\"chart_toolpanel_button\">\r\n            <div class=\"chart_toolpanel_icon\" id=\"chart_SegLine\" name=\"SegLine\"></div>\r\n            <div class=\"chart_toolpanel_tip chart_str_seg_line\">\r\n                线段\r\n            </div>\r\n        </div>\r\n        <div class=\"chart_toolpanel_button\">\r\n            <div class=\"chart_toolpanel_icon\" id=\"chart_StraightLine\" name=\"StraightLine\"></div>\r\n            <div class=\"chart_toolpanel_tip chart_str_straight_line\">\r\n                直线\r\n            </div>\r\n        </div>\r\n        <div class=\"chart_toolpanel_button\">\r\n            <div class=\"chart_toolpanel_icon\" id=\"chart_RayLine\" name=\"RayLine\"></div>\r\n            <div class=\"chart_toolpanel_tip chart_str_ray_line\">\r\n                射线\r\n            </div>\r\n        </div>\r\n        <div class=\"chart_toolpanel_button\">\r\n            <div class=\"chart_toolpanel_icon\" id=\"chart_ArrowLine\" name=\"ArrowLine\"></div>\r\n            <div class=\"chart_toolpanel_tip chart_str_arrow_line\">\r\n                箭头\r\n            </div>\r\n        </div>\r\n        <div class=\"chart_toolpanel_button\">\r\n            <div class=\"chart_toolpanel_icon\" id=\"chart_HoriSegLine\" name=\"HoriSegLine\"></div>\r\n            <div class=\"chart_toolpanel_tip chart_str_horz_seg_line\">\r\n                水平线段\r\n            </div>\r\n        </div>\r\n        <div class=\"chart_toolpanel_button\">\r\n            <div class=\"chart_toolpanel_icon\" id=\"chart_HoriStraightLine\" name=\"HoriStraightLine\"></div>\r\n            <div class=\"chart_toolpanel_tip chart_str_horz_straight_line\">\r\n                水平直线\r\n            </div>\r\n        </div>\r\n        <div class=\"chart_toolpanel_button\">\r\n            <div class=\"chart_toolpanel_icon\" id=\"chart_HoriRayLine\" name=\"HoriRayLine\"></div>\r\n            <div class=\"chart_toolpanel_tip chart_str_horz_ray_line\">\r\n                水平射线\r\n            </div>\r\n        </div>\r\n        <div class=\"chart_toolpanel_button\">\r\n            <div class=\"chart_toolpanel_icon\" id=\"chart_VertiStraightLine\" name=\"VertiStraightLine\"></div>\r\n            <div class=\"chart_toolpanel_tip chart_str_vert_straight_line\">\r\n                垂直直线\r\n            </div>\r\n        </div>\r\n        <div class=\"chart_toolpanel_button\">\r\n            <div class=\"chart_toolpanel_icon\" id=\"chart_PriceLine\" name=\"PriceLine\"></div>\r\n            <div class=\"chart_toolpanel_tip chart_str_price_line\">\r\n                价格线\r\n            </div>\r\n        </div>\r\n        <div class=\"chart_toolpanel_button\">\r\n            <div class=\"chart_toolpanel_icon\" id=\"chart_TriParallelLine\" name=\"TriParallelLine\"></div>\r\n            <div class=\"chart_toolpanel_tip chart_str_tri_parallel_line\">\r\n                价格通道线\r\n            </div>\r\n        </div>\r\n        <div class=\"chart_toolpanel_button\">\r\n            <div class=\"chart_toolpanel_icon\" id=\"chart_BiParallelLine\" name=\"BiParallelLine\"></div>\r\n            <div class=\"chart_toolpanel_tip chart_str_bi_parallel_line\">\r\n                平行直线\r\n            </div>\r\n        </div>\r\n        <div class=\"chart_toolpanel_button\">\r\n            <div class=\"chart_toolpanel_icon\" id=\"chart_BiParallelRayLine\" name=\"BiParallelRayLine\"></div>\r\n            <div class=\"chart_toolpanel_tip chart_str_bi_parallel_ray\">\r\n                平行射线\r\n            </div>\r\n        </div>\r\n        <div class=\"chart_toolpanel_button\">\r\n            <div class=\"chart_toolpanel_icon\" id=\"chart_DrawFibRetrace\" name=\"DrawFibRetrace\"></div>\r\n            <div class=\"chart_toolpanel_tip chart_str_fib_retrace\">\r\n                斐波纳契回调\r\n            </div>\r\n        </div>\r\n        <div class=\"chart_toolpanel_button\">\r\n            <div class=\"chart_toolpanel_icon\" id=\"chart_DrawFibFans\" name=\"DrawFibFans\"></div>\r\n            <div class=\"chart_toolpanel_tip chart_str_fib_fans\">\r\n                斐波纳契扇形\r\n            </div>\r\n        </div>\r\n        <div class=\"clear_all\">\r\n            <div class=\"clear_all_icon\" id=\"clearCanvas\"></div>\r\n            <div class=\"chart_toolpanel_tip chart_str_clear_all\">\r\n                清除全部\r\n            </div>\r\n        </div>\r\n    </div>\r\n    <div id=\"chart_canvasGroup\" class=\"temp\">\r\n        <canvas class=\"chart_canvas\" id=\"chart_mainCanvas\" style=\"cursor: default;\"></canvas>\r\n        <canvas class=\"chart_canvas\" id=\"chart_overlayCanvas\" style=\"cursor: default;\"></canvas>\r\n    </div>\r\n    <div id=\"chart_tabbar\">\r\n        <ul>\r\n            <li><a name=\"VOLUME\" class=\"\">VOLUME</a></li>\r\n\r\n            <li><a name=\"MACD\" class=\"\">MACD</a></li>\r\n\r\n            <li><a name=\"KDJ\" class=\"\">KDJ</a></li>\r\n\r\n            <li><a name=\"StochRSI\" class=\"\">StochRSI</a></li>\r\n\r\n            <li><a name=\"RSI\" class=\"\">RSI</a></li>\r\n\r\n            <li><a name=\"DMI\" class=\"\">DMI</a></li>\r\n\r\n            <li><a name=\"OBV\" class=\"\">OBV</a></li>\r\n\r\n            <li><a name=\"BOLL\" class=\"\">BOLL</a></li>\r\n\r\n            <li><a name=\"SAR\" class=\"\">SAR</a></li>\r\n\r\n            <li><a name=\"DMA\" class=\"\">DMA</a></li>\r\n\r\n            <li><a name=\"TRIX\" class=\"\">TRIX</a></li>\r\n\r\n            <li><a name=\"BRAR\" class=\"\">BRAR</a></li>\r\n\r\n            <li><a name=\"VR\" class=\"\">VR</a></li>\r\n\r\n            <li><a name=\"EMV\" class=\"\">EMV</a></li>\r\n\r\n            <li><a name=\"WR\" class=\"\">WR</a></li>\r\n\r\n            <li><a name=\"ROC\" class=\"\">ROC</a></li>\r\n\r\n            <li><a name=\"MTM\" class=\"\">MTM</a></li>\r\n\r\n            <li><a name=\"PSY\">PSY</a></li>\r\n\r\n        </ul>\r\n\r\n    </div>\r\n    <div id=\"chart_parameter_settings\">\r\n        <h2 class=\"chart_str_indicator_parameters\">指标参数设置</h2>\r\n        <table>\r\n            <tbody>\r\n            <tr>\r\n                <th>MA</th>\r\n                <td><input name=\"MA\"><input name=\"MA\"><input name=\"MA\"><input name=\"MA\"><input name=\"MA\"><input name=\"MA\">\r\n                </td>\r\n                <td>\r\n                    <button class=\"chart_str_default\">默认值</button>\r\n                </td>\r\n                <th>DMA</th>\r\n                <td><input name=\"DMA\"><input name=\"DMA\"><input name=\"DMA\"></td>\r\n                <td>\r\n                    <button class=\"chart_str_default\">默认值</button>\r\n                </td>\r\n            </tr>\r\n            <tr>\r\n                <th>EMA</th>\r\n                <td>\r\n                    <input name=\"EMA\"><input name=\"EMA\"><input name=\"EMA\"><input name=\"EMA\"><input name=\"EMA\"><input name=\"EMA\">\r\n                </td>\r\n                <td>\r\n                    <button class=\"chart_str_default\">默认值</button>\r\n                </td>\r\n\r\n                <th>TRIX</th>\r\n                <td><input name=\"TRIX\"><input name=\"TRIX\"></td>\r\n                <td>\r\n                    <button class=\"chart_str_default\">默认值</button>\r\n                </td>\r\n            </tr>\r\n\r\n            <tr>\r\n                <th>VOLUME</th>\r\n                <td><input name=\"VOLUME\"><input name=\"VOLUME\"></td>\r\n                <td>\r\n                    <button class=\"chart_str_default\">默认值</button>\r\n                </td>\r\n\r\n                <th>BRAR</th>\r\n                <td><input name=\"BRAR\"></td>\r\n                <td>\r\n                    <button class=\"chart_str_default\">默认值</button>\r\n                </td>\r\n            </tr>\r\n            <tr>\r\n                <th>MACD</th>\r\n                <td>\r\n                    <input name=\"MACD\"><input name=\"MACD\"><input name=\"MACD\">\r\n                </td>\r\n                <td>\r\n                    <button class=\"chart_str_default\">默认值</button>\r\n                </td>\r\n\r\n                <th>VR</th>\r\n                <td><input name=\"VR\"><input name=\"VR\"></td>\r\n                <td>\r\n                    <button class=\"chart_str_default\">默认值</button>\r\n                </td>\r\n            </tr>\r\n            <tr>\r\n                <th>KDJ</th>\r\n                <td>\r\n                    <input name=\"KDJ\"><input name=\"KDJ\"><input name=\"KDJ\">\r\n                </td>\r\n                <td>\r\n                    <button class=\"chart_str_default\">默认值</button>\r\n                </td>\r\n\r\n                <th>EMV</th>\r\n                <td>\r\n                    <input name=\"EMV\"><input name=\"EMV\">\r\n                </td>\r\n                <td>\r\n                    <button class=\"chart_str_default\">默认值</button>\r\n                </td>\r\n            </tr>\r\n            <tr>\r\n                <th>StochRSI</th>\r\n                <td>\r\n                    <input name=\"StochRSI\"><input name=\"StochRSI\"><input name=\"StochRSI\"><input name=\"StochRSI\">\r\n                </td>\r\n                <td>\r\n                    <button class=\"chart_str_default\">默认值</button>\r\n                </td>\r\n\r\n                <th>WR</th>\r\n                <td>\r\n                    <input name=\"WR\"><input name=\"WR\">\r\n                </td>\r\n                <td>\r\n                    <button class=\"chart_str_default\">默认值</button>\r\n                </td>\r\n            </tr>\r\n            <tr>\r\n                <th>RSI</th>\r\n                <td>\r\n                    <input name=\"RSI\"><input name=\"RSI\"><input name=\"RSI\">\r\n                </td>\r\n                <td>\r\n                    <button class=\"chart_str_default\">默认值</button>\r\n                </td>\r\n\r\n                <th>ROC</th>\r\n                <td>\r\n                    <input name=\"ROC\"><input name=\"ROC\">\r\n                </td>\r\n                <td>\r\n                    <button class=\"chart_str_default\">默认值</button>\r\n                </td>\r\n            </tr>\r\n            <tr>\r\n                <th>DMI</th>\r\n                <td>\r\n                    <input name=\"DMI\"><input name=\"DMI\">\r\n                </td>\r\n                <td>\r\n                    <button class=\"chart_str_default\">默认值</button>\r\n                </td>\r\n\r\n                <th>MTM</th>\r\n                <td>\r\n                    <input name=\"MTM\"><input name=\"MTM\">\r\n                </td>\r\n                <td>\r\n                    <button class=\"chart_str_default\">默认值</button>\r\n                </td>\r\n            </tr>\r\n            <tr>\r\n                <th>OBV</th>\r\n                <td>\r\n                    <input name=\"OBV\">\r\n                </td>\r\n                <td>\r\n                    <button class=\"chart_str_default\">默认值</button>\r\n                </td>\r\n\r\n                <th>PSY</th>\r\n                <td>\r\n                    <input name=\"PSY\"><input name=\"PSY\">\r\n                </td>\r\n                <td>\r\n                    <button class=\"chart_str_default\">默认值</button>\r\n                </td>\r\n            </tr>\r\n            <tr>\r\n                <th>BOLL</th>\r\n                <td>\r\n                    <input name=\"BOLL\">\r\n                </td>\r\n                <td>\r\n                    <button class=\"chart_str_default\">默认值</button>\r\n                </td>\r\n            </tr>\r\n            </tbody>\r\n        </table>\r\n        <div id=\"close_settings\"><a class=\"chart_str_close\">关闭</a></div>\r\n    </div>\r\n    <!-- Loading -->\r\n    <div id=\"chart_loading\" class=\"chart_str_loading\">正在读取数据...</div>\r\n</div>\r\n<div style=\"display: none\" id=\"chart_language_switch_tmp\">\r\n    <span name=\"chart_str_period\" zh_tw=\"週期\" zh_cn=\"周期\" en_us=\"TIME\"></span>\r\n    <span name=\"chart_str_period_line\" zh_tw=\"分時\" zh_cn=\"分时\" en_us=\"Line\"></span>\r\n    <span name=\"chart_str_period_1m\" zh_tw=\"1分鐘\" zh_cn=\"1分钟\" en_us=\"1m\"></span>\r\n    <span name=\"chart_str_period_3m\" zh_tw=\"3分鐘\" zh_cn=\"3分钟\" en_us=\"3m\"></span>\r\n    <span name=\"chart_str_period_5m\" zh_tw=\"5分鐘\" zh_cn=\"5分钟\" en_us=\"5m\"></span>\r\n    <span name=\"chart_str_period_15m\" zh_tw=\"15分鐘\" zh_cn=\"15分钟\" en_us=\"15m\"></span>\r\n    <span name=\"chart_str_period_30m\" zh_tw=\"30分鐘\" zh_cn=\"30分钟\" en_us=\"30m\"></span>\r\n    <span name=\"chart_str_period_1h\" zh_tw=\"1小時\" zh_cn=\"1小时\" en_us=\"1h\"></span>\r\n    <span name=\"chart_str_period_2h\" zh_tw=\"2小時\" zh_cn=\"2小时\" en_us=\"2h\"></span>\r\n    <span name=\"chart_str_period_4h\" zh_tw=\"4小時\" zh_cn=\"4小时\" en_us=\"4h\"></span>\r\n    <span name=\"chart_str_period_6h\" zh_tw=\"6小時\" zh_cn=\"6小时\" en_us=\"6h\"></span>\r\n    <span name=\"chart_str_period_12h\" zh_tw=\"12小時\" zh_cn=\"12小时\" en_us=\"12h\"></span>\r\n    <span name=\"chart_str_period_1d\" zh_tw=\"日線\" zh_cn=\"日线\" en_us=\"1d\"></span>\r\n    <span name=\"chart_str_period_3d\" zh_tw=\"3日\" zh_cn=\"3日\" en_us=\"3d\"></span>\r\n    <span name=\"chart_str_period_1w\" zh_tw=\"周線\" zh_cn=\"周线\" en_us=\"1w\"></span>\r\n    <span name=\"chart_str_settings\" zh_tw=\"更多\" zh_cn=\"更多\" en_us=\"MORE\"></span>\r\n    <span name=\"chart_setting_main_indicator\" zh_tw=\"均線設置\" zh_cn=\"均线设置\" en_us=\"Main Indicator\"></span>\r\n    <span name=\"chart_setting_main_indicator_none\" zh_tw=\"關閉均線\" zh_cn=\"关闭均线\" en_us=\"None\"></span>\r\n    <span name=\"chart_setting_indicator_parameters\" zh_tw=\"指標參數設置\" zh_cn=\"指标参数设置\" en_us=\"Indicator Parameters\"></span>\r\n    <span name=\"chart_str_chart_style\" zh_tw=\"主圖樣式\" zh_cn=\"主图样式\" en_us=\"Chart Style\"></span>\r\n    <span name=\"chart_str_main_indicator\" zh_tw=\"主指標\" zh_cn=\"主指标\" en_us=\"Main Indicator\"></span>\r\n    <span name=\"chart_str_indicator\" zh_tw=\"技術指標\" zh_cn=\"技术指标\" en_us=\"Indicator\"></span>\r\n    <span name=\"chart_str_indicator_cap\" zh_tw=\"技術指標\" zh_cn=\"技术指标\" en_us=\"INDICATOR\"></span>\r\n    <span name=\"chart_str_tools\" zh_tw=\"畫線工具\" zh_cn=\"画线工具\" en_us=\"Tools\"></span>\r\n    <span name=\"chart_str_tools_cap\" zh_tw=\"畫線工具\" zh_cn=\"画线工具\" en_us=\"TOOLS\"></span>\r\n    <span name=\"chart_str_theme\" zh_tw=\"主題選擇\" zh_cn=\"主题选择\" en_us=\"Theme\"></span>\r\n    <span name=\"chart_str_theme_cap\" zh_tw=\"主題選擇\" zh_cn=\"主题选择\" en_us=\"THEME\"></span>\r\n    <span name=\"chart_language_setting\" zh_tw=\"語言(LANG)\" zh_cn=\"语言(LANG)\" en_us=\"LANGUAGE\"></span>\r\n\r\n    <span name=\"chart_str_none\" zh_tw=\"關閉\" zh_cn=\"关闭\" en_us=\"None\"></span>\r\n    <span name=\"chart_str_theme_dark\" zh_tw=\"深色主題\" zh_cn=\"深色主题\" en_us=\"Dark\"></span>\r\n    <span name=\"chart_str_theme_light\" zh_tw=\"淺色主題\" zh_cn=\"浅色主题\" en_us=\"Light\"></span>\r\n    <span name=\"chart_str_on\" zh_tw=\"開啟\" zh_cn=\"开启\" en_us=\"On\"></span>\r\n    <span name=\"chart_str_off\" zh_tw=\"關閉\" zh_cn=\"关闭\" en_us=\"Off\"></span>\r\n    <span name=\"chart_str_close\" zh_tw=\"關閉\" zh_cn=\"关闭\" en_us=\"CLOSE\"></span>\r\n    <span name=\"chart_str_default\" zh_tw=\"默認值\" zh_cn=\"默认值\" en_us=\"default\"></span>\r\n    <span name=\"chart_str_loading\" zh_tw=\"正在讀取數據...\" zh_cn=\"正在读取数据...\" en_us=\"Loading...\"></span>\r\n    <span name=\"chart_str_indicator_parameters\" zh_tw=\"指標參數設置\" zh_cn=\"指标参数设置\" en_us=\"Indicator Parameters\"></span>\r\n    <span name=\"chart_str_cursor\" zh_tw=\"光標\" zh_cn=\"光标\" en_us=\"Cursor\"></span>\r\n    <span name=\"chart_str_cross_cursor\" zh_tw=\"十字光標\" zh_cn=\"十字光标\" en_us=\"Cross Cursor\"></span>\r\n    <span name=\"chart_str_seg_line\" zh_tw=\"線段\" zh_cn=\"线段\" en_us=\"Trend Line\"></span>\r\n    <span name=\"chart_str_straight_line\" zh_tw=\"直線\" zh_cn=\"直线\" en_us=\"Extended\"></span>\r\n    <span name=\"chart_str_ray_line\" zh_tw=\"射線\" zh_cn=\"射线\" en_us=\"Ray\"></span>\r\n    <span name=\"chart_str_arrow_line\" zh_tw=\"箭頭\" zh_cn=\"箭头\" en_us=\"Arrow\"></span>\r\n    <span name=\"chart_str_horz_seg_line\" zh_tw=\"水平線段\" zh_cn=\"水平线段\" en_us=\"Horizontal Line\"></span>\r\n    <span name=\"chart_str_horz_straight_line\" zh_tw=\"水平直線\" zh_cn=\"水平直线\" en_us=\"Horizontal Extended\"></span>\r\n    <span name=\"chart_str_horz_ray_line\" zh_tw=\"水平射線\" zh_cn=\"水平射线\" en_us=\"Horizontal Ray\"></span>\r\n    <span name=\"chart_str_vert_straight_line\" zh_tw=\"垂直直線\" zh_cn=\"垂直直线\" en_us=\"Vertical Extended\"></span>\r\n    <span name=\"chart_str_price_line\" zh_tw=\"價格線\" zh_cn=\"价格线\" en_us=\"Price Line\"></span>\r\n    <span name=\"chart_str_tri_parallel_line\" zh_tw=\"價格通道線\" zh_cn=\"价格通道线\" en_us=\"Parallel Channel\"></span>\r\n    <span name=\"chart_str_bi_parallel_line\" zh_tw=\"平行直線\" zh_cn=\"平行直线\" en_us=\"Parallel Lines\"></span>\r\n    <span name=\"chart_str_bi_parallel_ray\" zh_tw=\"平行射線\" zh_cn=\"平行射线\" en_us=\"Parallel Rays\"></span>\r\n    <span name=\"chart_str_fib_retrace\" zh_tw=\"斐波納契回調\" zh_cn=\"斐波纳契回调\" en_us=\"Fibonacci Retracements\"></span>\r\n    <span name=\"chart_str_fib_fans\" zh_tw=\"斐波納契扇形\" zh_cn=\"斐波纳契扇形\" en_us=\"Fibonacci Fans\"></span>\r\n    <span name=\"chart_str_clear_all\" zh_tw=\"清除全部\" zh_cn=\"清除全部\" en_us=\"Clear All\"></span>\r\n</div>\r\n";
 
 /***/ })
 /******/ ]);

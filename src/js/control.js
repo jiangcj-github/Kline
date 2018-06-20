@@ -1,5 +1,5 @@
 import Kline from './kline'
-import {KlineTrade} from './kline_trade'
+//import {KlineTrade} from './kline_trade'
 import {ChartManager} from './chart_manager'
 import {ChartSettings} from './chart_settings'
 import {DefaultTemplate, Template} from './templates'
@@ -161,12 +161,16 @@ export class Control {
             }
             return;
         }
+        /*
         if (Kline.instance.data.trades && Kline.instance.data.trades.length > 0) {
             KlineTrade.instance.pushTrades(Kline.instance.data.trades);
             KlineTrade.instance.klineTradeInit = true;
         }
-        if (Kline.instance.data.depths) {
-            KlineTrade.instance.updateDepth(Kline.instance.data.depths);
+        */
+        let tmp = ChartSettings.get();
+        if (Kline.instance.data.depths && tmp.charts.showDepth) {
+            //KlineTrade.instance.updateDepth(Kline.instance.data.depths);
+            ChartManager.instance.getChart().updateDepth(Kline.instance.data.depths);
         }
         Control.clearRefreshCounter();
 
@@ -248,9 +252,11 @@ export class Control {
             str += "&limit=" + limit;
         else
             str += "&since=" + since;
+        /*
         if (KlineTrade.instance.tradeDate.getTime() !== 0) {
             str += "&prevTradeTime=" + KlineTrade.instance.tradeDate.getTime();
         }
+        */
         return str;
     }
 
@@ -285,7 +291,8 @@ export class Control {
 
     static onSize(w, h) {
         let width = w || window.innerWidth;
-        let chartWidth = Kline.instance.showTrade ? (width - Kline.instance.tradeWidth) : width;
+        //let chartWidth = Kline.instance.showTrade ? (width - Kline.instance.tradeWidth) : width;
+        let chartWidth=width;
         let height = h || window.innerHeight;
         let container = $(Kline.instance.element);
         container.css({
@@ -367,13 +374,14 @@ export class Control {
         let rowTheme = $('#chart_select_theme')[0];
         let rowTools = $('#chart_enable_tools')[0];
         let rowIndic = $('#chart_enable_indicator')[0];
+        let symbolTitle=$("#symbol_title")[0];
         let periodsVert = $('#chart_toolbar_periods_vert');
         let periodsHorz = $('#chart_toolbar_periods_horz')[0];
         let showIndic = $('#chart_show_indicator')[0];
         let showTools = $('#chart_show_tools')[0];
         let selectTheme = $('#chart_toolbar_theme')[0];
         let dropDownSettings = $('#chart_dropdown_settings');
-        let periodsVertNW = periodsVert[0].offsetWidth;
+        let periodsVertNW = symbolTitle.offsetWidth + periodsVert[0].offsetWidth;
         let periodsHorzNW = periodsVertNW + periodsHorz.offsetWidth;
         let showIndicNW = periodsHorzNW + showIndic.offsetWidth + 4;
         let showToolsNW = showIndicNW + showTools.offsetWidth + 4;
@@ -506,10 +514,13 @@ export class Control {
             tmp.charts.indicsStatus = 'open';
             ChartSettings.save();
             let value = tmp.charts.indics[1];
+            /*
             if (Template.displayVolume === false)
                 ChartManager.instance.getChart().setIndicator(2, value);
             else
                 ChartManager.instance.getChart().setIndicator(2, value);
+            */
+            ChartManager.instance.getChart().setIndicator(1, value);
             $("#chart_tabbar").find('a').each(function () {
                 if ($(this).attr('name') === value)
                     $(this).addClass('selected');
@@ -564,18 +575,29 @@ export class Control {
         ChartSettings.save();
     }
 
+    static switchDepth(showDepth,depthWidth){
+        let tmp = ChartSettings.get();
+        tmp.charts.showDepth = showDepth;
+        tmp.charts.depthWidth = depthWidth;
+        ChartSettings.save();
+    }
+
     static reset(symbol) {
         Kline.instance.symbol = symbol;
-
+        /*
         if (Kline.instance.showTrade) {
             KlineTrade.instance.reset(symbol);
         }
+        */
     }
 
-    static switchSymbolSelected(symbol) {
+    static switchSymbolSelected(symbol,symbolName) {
         Control.reset(symbol);
+        /*
         $(".market_chooser ul a").removeClass("selected");
         $(".market_chooser ul a[name='" + symbol + "']").addClass("selected");
+        */
+        $(".symbol-title").text(symbolName);
         ChartManager.instance.getChart()._symbol = symbol;
         let settings = ChartSettings.get();
         settings.charts.symbol = symbol;
@@ -583,12 +605,12 @@ export class Control {
     }
 
 
-    static switchSymbol(symbol) {
+    static switchSymbol(symbol,symbolName) {
         if (Kline.instance.type === "stomp" && Kline.instance.stompClient.ws.readyState === 1) {
             Kline.instance.subscribed.unsubscribe();
             Kline.instance.subscribed = Kline.instance.stompClient.subscribe(Kline.instance.subscribePath + '/' + symbol + '/' + Kline.instance.range, Control.subscribeCallback);
         }
-        Control.switchSymbolSelected(symbol);
+        Control.switchSymbolSelected(symbol,symbolName);
         let settings = ChartSettings.get();
         if (settings.charts.period === "line") {
             ChartManager.instance.getChart().strIsLine = true;

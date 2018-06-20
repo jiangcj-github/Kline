@@ -59,8 +59,8 @@
 
     var kline = new Kline({
         element: "#kline_container",
-        width: 1200,
-        height: 650,
+        width: 600,
+        height: 400,
         theme: 'dark', // light/dark
         language: 'zh-cn', // zh-cn/en-us/zh-tw
         ranges: ["1w", "1d", "1h", "30m", "15m", "5m", "1m", "line"],
@@ -70,8 +70,9 @@
         url: "mock.json",
         limit: 1000,
         intervalTime: 5000,
-        debug: true,
-        showTrade: true,
+        debug: false,
+        showDepth: false,
+        depthWidth: 50,
         onResize: function(width, height) {
             console.log("chart resized: " + width + " " + height);
         }
