@@ -113,9 +113,10 @@ $ npm run build
 |`subscribePath`   | 订阅地址 (仅stomp方式需要) | 
 |`sendPath`   | 发送地址 (仅stomp方式需要) | 
 |`debug`   | 是否开启调试模式 true/false |  true
-|`showTrade`   | 是否显示行情侧边栏 true/false |  true
 |`reverseColor`   | 是否反色, 默认绿涨红跌 true/false | false
 |`stompClient`   | stomp 连接对象 | null
+|`showDepth`   | 是否显示深度图 | false
+|`depthWidth`   | 深度图宽度 | 最小50，小于50则取50，默认50
 
 
 ### Methods
@@ -160,28 +161,20 @@ kline.setTheme('dark');  // dark/light
 kline.setLanguage('en-us');  // en-us/zh-ch/zh-tw
 ```
 
-* setShowTrade: function (isShow) 
-
-    设置展示是否展示交易模块
-
-```javascript
-kline.setShowTrade(false);  // true/false
-```
-
-* toggleTrade: function () 
-
-    切换展示是否展示交易模块
-
-```javascript
-kline.toggleTrade(); 
-```
-
 * setIntervalTime: function (intervalTime) 
 
     设置请求间隔时间(ms)
 
 ```javascript
 kline.setIntervalTime(5000); 
+```
+
+* Kline.setDepth: function(showDepth,depthWidth)
+
+    设置深度图
+
+```javascript
+kline.setDepth(true,50);
 ```
 
 * connect: function () 
@@ -292,4 +285,4 @@ kline.resend();
 
 * `lines`: K线图, 依次是: 时间(ms), 开盘价, 最高价, 最低价, 收盘价, 成交量
 * `depths`(可选, 行情侧边栏显示): 深度图数据,  `asks`:一定比例的卖单列表, `bids`:一定比例的买单列表, 其中每项的值依次是 成交价, 成交量
-* `trades`(可选, 行情侧边栏显示): 最近成交记录,  `amount`: 成交量, `price`:单价, `tid`:订单ID, `time`:成交时间(ms), `type`:成交类型 buy/sell
+* `trades`(可选, 行情侧边栏显示, 功能已屏蔽): 最近成交记录,  `amount`: 成交量, `price`:单价, `tid`:订单ID, `time`:成交时间(ms), `type`:成交类型 buy/sell
